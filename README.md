@@ -1,0 +1,2 @@
+# WikidataMapVIS
+Wikidataのクエリサービス（SPARQLエンドポイント）を使った，経路検索付きのMAPを簡単に生成するサービスです．
