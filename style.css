@@ -6,7 +6,12 @@ body {
 /*ページのタイトル*/
 header > h1 {
     margin: 0;
-    background-color: #99cc00;
+    background-color: #6cb5f1;
+}
+
+h3 {
+  padding: 0;
+  background-color: #d0e0ec;
 }
 
 .container {

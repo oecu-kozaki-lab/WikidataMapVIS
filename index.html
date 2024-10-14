@@ -144,8 +144,13 @@ async function makeQuery(){
 <!-- 検索条件設定の領域 -->
 <div id="menu" class="container">
 	<div style="margin-top:4px;">
-        Wikidataに登録されている位置情報をもとに<b>「いろんな分類のMAP」</b>を作成します．<br>
-        →作成例）<a href="https://w.wiki/BWuu" target="_blank">一の宮マップ</a>（<a href="https://qiita.com/koujikozaki/items/60e209517a1dd0b747a8" target="_blank">解説記事</a>）<br>
+        <p>Wikidataに登録されている位置情報をもとに<b>「いろんな分類のMAP」</b>を作成します．<br>
+        →作成例）<a href="https://w.wiki/BWuu" target="_blank">一の宮マップ</a>
+        </p>
+        <p>
+            【<a href="https://qiita.com/koujikozaki/items/60e209517a1dd0b747a8" target="_blank">使い方</a>】 
+            【<a href="https://qiita.com/koujikozaki/items/60e209517a1dd0b747a8" target="_blank">技術解説</a>】
+        </p>
 
     <h3>MAPの作成</h3>
         下記の入力欄にMAPで表示したいデータの<b>「具体例」</b>を入力して検索してください．<br>
@@ -198,14 +203,18 @@ LIMIT 50
         <b>MAP生成用のクエリ</b>：<br>
         →下記のクエリ内の<B>#CLASS#</B>の部分を，データ検索結果から選択した「分類」に置き換えて検索します．<br>
 <textarea id="query_for_map" class="t_area" rows="10">
-#defaultView:Map
-SELECT ?item ?itemLabel ?loc ?kana 
-    (SAMPLE(?web) AS ?w) (SAMPLE(?img) AS ?image) (SAMPLE(?addr) AS ?address)
+#defaultView:Map{"hide":["?loc"]}
+SELECT ?item ?itemLabel ?loc 
+    (URI(CONCAT("https://kgs.hozo.jp/sample/details.html?key=",str(?item))) AS ?detail)
+    ("■Wikidataでの定義を見る" AS ?detailTitle)   
     (URI(CONCAT("https://www.google.com/maps/dir/現在地/", 
             (strafter((REPLACE(str(?loc),"\\)",""))," ")) , ",",
             strbefore((REPLACE(str(?loc),"Point\\(",""))," "))
-    ) AS ?map) 
-    (URI(CONCAT("https://kgs.hozo.jp/sample/details.html?key=",str(?item))) AS ?detal)
+    ) AS ?map)
+    ("■経路検索" AS ?mapTitle)   
+    (SAMPLE(?addr) AS ?address)(SAMPLE(?web) AS ?w) (SAMPLE(?img) AS ?image)
+    (CONCAT("(",?kana,")") AS ?nameKana) 
+    (?itemLabel AS ?name) 
 WHERE {
     ?item wdt:P31/wdt:P279* wd:#CLASS#. #分類の指定
     ?item wdt:P625 ?loc.  #位置情報の取得
