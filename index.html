@@ -145,8 +145,8 @@ async function makeQuery(){
 <div id="menu" class="container">
 	<div style="margin-top:4px;">
         <p>Wikidataに登録されている位置情報をもとに<b>「いろんな分類のMAP」</b>を作成します．<br>
-        →作成例）「<a href="https://w.wiki/BWuu" target="_blank">一の宮マップ</a>」 
-        「<a href="https://tinyurl.com/4rn66zf9"target="_blank">世界の国際空港</a>」
+        →作成例）「<a href="https://w.wiki/BXg9" target="_blank">一の宮マップ</a>」 
+        「<a href="https://w.wiki/BXgq"target="_blank">世界の国際空港</a>」
         </p>
         <p>
             【<a href="doc/WikidataMapVIS_HowTo.pdf" target="_blank">使い方</a>】 
@@ -218,7 +218,7 @@ SELECT ?item ?itemLabel ?loc
     (CONCAT("(",SAMPLE(?kana),")") AS ?nameKana) 
     (?itemLabel AS ?name) 
 WHERE {
-    ?item wdt:P31/wdt:P279* wd:Q1656379. #分類の指定
+    ?item wdt:P31/wdt:P279* wd:#CLASS#. #分類の指定
     ?item wdt:P625 ?loc.  #位置情報の取得
     ?item wdt:P17 wd:Q17.
     OPTIONAL{?item wdt:P1814 ?kana.}
