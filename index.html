@@ -213,10 +213,10 @@ SELECT ?item ?itemLabel ?loc
     ) AS ?map)
     ("■経路検索" AS ?mapTitle)   
     (SAMPLE(?addr) AS ?address)(SAMPLE(?web) AS ?w) (SAMPLE(?img) AS ?image)
-    (CONCAT("(",?kana,")") AS ?nameKana) 
+    (CONCAT("(",SAMPLE(?kana),")") AS ?nameKana) 
     (?itemLabel AS ?name) 
 WHERE {
-    ?item wdt:P31/wdt:P279* wd:#CLASS#. #分類の指定
+    ?item wdt:P31/wdt:P279* wd:Q1656379. #分類の指定
     ?item wdt:P625 ?loc.  #位置情報の取得
     ?item wdt:P17 wd:Q17. #国(wdt:P17)が日本(wd:Q17)のデータに限定【限定が不要ならコメントアウトする】
     OPTIONAL{
@@ -234,7 +234,7 @@ WHERE {
     }
     SERVICE wikibase:label { bd:serviceParam wikibase:language "ja". }
 }
-GROUP BY ?item ?itemLabel ?loc ?kana
+GROUP BY ?item ?itemLabel ?loc    
 </textarea>		
 	</div>
 </div>
