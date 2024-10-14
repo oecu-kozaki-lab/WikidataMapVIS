@@ -150,7 +150,7 @@ async function makeQuery(){
         </p>
         <p>
             【<a href="doc/WikidataMapVIS_HowTo.pdf" target="_blank">使い方</a>】 
-            【<a href="https://qiita.com/koujikozaki/items/60e209517a1dd0b747a8" target="_blank">技術解説</a>】
+            【<a href="https://qiita.com/koujikozaki/items/197db0dfc555d57338c6" target="_blank">技術解説</a>】
             【<a href="https://github.com/oecu-kozaki-lab/WikidataMapVIS" target="_blank">ソースコード</a>】
         </p>
 
@@ -218,25 +218,16 @@ SELECT ?item ?itemLabel ?loc
     (CONCAT("(",SAMPLE(?kana),")") AS ?nameKana) 
     (?itemLabel AS ?name) 
 WHERE {
-    ?item wdt:P31/wdt:P279* wd:#CLASS#. #分類の指定
+    ?item wdt:P31/wdt:P279* wd:Q1656379. #分類の指定
     ?item wdt:P625 ?loc.  #位置情報の取得
-    ?item wdt:P17 wd:Q17. #国(wdt:P17)が日本(wd:Q17)のデータに限定【限定が不要ならコメントアウトする】
-    OPTIONAL{
-    ?item wdt:P1814 ?kana. 
-    }
-    OPTIONAL{
-    ?item wdt:P18 ?img. 
-    }
-    OPTIONAL{
-    ?item wdt:P6375 ?addr. 
-    FILTER(lang(?addr)="ja")
-    }
-    OPTIONAL{
-    ?item wdt:P856 ?web. 
-    }
+    ?item wdt:P17 wd:Q17.
+    OPTIONAL{?item wdt:P1814 ?kana.}
+    OPTIONAL{?item wdt:P18 ?img.}
+    OPTIONAL{?item wdt:P6375 ?addr.FILTER(lang(?addr)="ja")}
+    OPTIONAL{?item wdt:P856 ?web.}
     SERVICE wikibase:label { bd:serviceParam wikibase:language "ja". }
 }
-GROUP BY ?item ?itemLabel ?loc    
+GROUP BY ?item ?itemLabel ?loc   
 </textarea>		
 	</div>
 </div>
