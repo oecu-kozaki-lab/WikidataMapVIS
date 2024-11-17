@@ -69,7 +69,7 @@ async function makeQuery(){
         conditions = 'VALUES ?item {'+vals+'}\n';
     }
 	
-    query = query.replace('#IDs#',conditions);
+    query = query.replaceAll('#IDs#',conditions);
 
 
     document.getElementById('query_area2').value = query;
@@ -155,7 +155,7 @@ async function makeQuery(){
         </p>
 
     <h3>MAPの作成</h3>
-        下記の入力欄にMAPで表示したいデータの<b>「具体例」</b>（出雲大社，関西国際空港，など）<br>
+        下記の入力欄にMAPで表示したいデータの<b>「分類」</b>(空港，大学，など)，または，<b>「具体例」</b>（出雲大社，関西国際空港，など）<br>
         を入力して検索してください．<br>
         <input id="INPUT" type="text" value="出雲大社" autocomplete="off" size="20"/>
         <input type="button" id="send" value="検索の実行" style="margin-top:8px; "><br>
@@ -191,10 +191,15 @@ async function makeQuery(){
 <textarea id="query_area" class="t_area" rows="10">
 SELECT DISTINCT ?item ?itemLabel ?class ?classLabel
 WHERE {
-    #IDs#
+{    #IDs#
     ?item wdt:P31 ?class.
     ?item wdt:P625 ?loc.
-    SERVICE wikibase:label { bd:serviceParam wikibase:language "ja, en". }
+}UNION
+{    #IDs#
+     BIND(?item AS ?class).
+    ?class wdt:P279 ?upper.
+}
+SERVICE wikibase:label { bd:serviceParam wikibase:language "ja, en". }
 }
 LIMIT 50
 </textarea><br>
@@ -228,7 +233,8 @@ WHERE {
     OPTIONAL{?item wdt:P856 ?web.}
     SERVICE wikibase:label { bd:serviceParam wikibase:language "ja". }
 }
-GROUP BY ?item ?itemLabel ?loc   
+GROUP BY ?item ?itemLabel ?loc
+LIMIT 100000
 </textarea>		
 	</div>
 </div>
