@@ -69,8 +69,7 @@ async function makeQuery(){
         conditions = 'VALUES ?item {'+vals+'}\n';
     }
 	
-    query = query.replaceAll('#IDs#',conditions)
-                 .replaceAll('#IDcls#',conditions.replaceAll('?item','?class'));
+    query = query.replaceAll('#IDs#',conditions);
 
 
     document.getElementById('query_area2').value = query;
@@ -119,31 +118,11 @@ async function makeQuery(){
             mapQuery = mapQuery.replace("?item wdt:P17 wd:Q17.","");
         }
 
-        let listQuery = "";
-        
-        if(data[i]["kind"].value=="分類"){
-            listQuery = "?item wdt:P31/wdt:P279* wd:#CLASS#.\n"+
-                        "wd:#CLASS# rdfs:label ?layer. ";
-        }
-        else if(data[i]["kind"].value=="含む"){
-            listQuery = "wd:#CLASS# wdt:P527 ?item.\n"+
-                        "wd:#CLASS# rdfs:label ?layer. ";
-        }
-        else if(data[i]["kind"].value=="一部"){
-            listQuery = "?item wdt:P361 wd:#CLASS#.\n"+
-                        "wd:#CLASS# rdfs:label ?layer. ";
-        }
-        else if(data[i]["kind"].value=="ついて"){
-            listQuery = "?item p:P31/pq:P642 wd:#CLASS#.\n"+
-                        "wd:#CLASS# rdfs:label ?layer. ";
-        }
-
-        listQuery = listQuery.replaceAll("#CLASS#",
-             (data[i]["class"].value.replace("http://www.wikidata.org/entity/","")));
-					
         mesText+='<td><button onclick="window.open('
 				+"'https://query.wikidata.org/embed.html#"
-				+encodeURIComponent(mapQuery.replace("#GET-LIST#",listQuery)
+				+encodeURIComponent(mapQuery.replace("#CLASS#",
+						(data[i]["class"].value.replace("http://www.wikidata.org/entity/",""))
+						)
 					)
                 +"'"+')">この分類でMAPを作成する</button></td>';
             
@@ -208,59 +187,21 @@ async function makeQuery(){
         <B>Endpoint:</B>
         <input id="ENDPOINT" type="text" value="https://query.wikidata.org/sparql" autocomplete="off" size="40"/><br>
 		<b>データ検索用のクエリ（置き換え前）</b>：<br>
-→下記のクエリ内の<B>#IDs#</B>と<B>#IDcls#</B>の部分を，上記の入力内容をもとに置き換えて検索します．<br>
+→下記のクエリ内の<B>#IDs#</B>の部分を，上記の入力内容をもとに置き換えて検索します．<br>
 <textarea id="query_area" class="t_area" rows="10">
-SELECT DISTINCT ?item ?itemLabel ?class ?classLabel ?kind
+SELECT DISTINCT ?item ?itemLabel ?class ?classLabel
 WHERE {
-{  #IDs#  
-    #分類
-    {   ?item wdt:P31 ?class.
-        ?item wdt:P625 ?loc.
-        BIND("分類" AS ?kind)
-    }
-    UNION
-    # #○○の一部
-    {  ?item wdt:P361 ?class.
+{    #IDs#
+    ?item wdt:P31 ?class.
     ?item wdt:P625 ?loc.
-    BIND("一部" AS ?kind)
-    }
-    UNION
-    # #○○を含む
-    {   ?class wdt:P527 ?item.
-        ?item wdt:P625 ?loc.
-        BIND("含む" AS ?kind)
-    }
-    UNION
-    # #○○について
-    {   ?item p:P31/pq:P642 ?class.
-        ?item wdt:P625 ?loc.
-        BIND("ついて" AS ?kind)
-    }
-}
-UNION
-{  #IDcls#  
-    { ?ins wdt:P31 ?class.
-    ?ins wdt:P625 ?loc.
-    BIND("分類" AS ?kind)
-    }
-    UNION
-    {  ?part wdt:P361 ?class.
-        ?part wdt:P625 ?loc.
-        BIND("一部" AS ?kind)
-    }
-    UNION
-    {  ?class wdt:P527 ?part.
-    BIND("含む" AS ?kind)
-    }
-    UNION
-    { ?ins p:P31/pq:P642 ?class.
-    ?ins wdt:P625 ?loc.
-    BIND("ついて" AS ?kind)
-}
+}UNION
+{    #IDs#
+     BIND(?item AS ?class).
+    ?class wdt:P279 ?upper.
 }
 SERVICE wikibase:label { bd:serviceParam wikibase:language "ja, en". }
 }
-LIMIT 50    
+LIMIT 50
 </textarea><br>
 		<b>データ検索用のクエリ（置き換え後）</b>：<br>					
 		<textarea id="query_area2" class="t_area" rows="10" ></textarea><br>
@@ -270,8 +211,8 @@ LIMIT 50
         <b>MAP生成用のクエリ</b>：<br>
         →下記のクエリ内の<B>#CLASS#</B>の部分を，データ検索結果から選択した「分類」に置き換えて検索します．<br>
 <textarea id="query_for_map" class="t_area" rows="10">
-#defaultView:Map{"hide":["?loc","?layer"]}
-SELECT ?item ?itemLabel ?loc  ?layer
+#defaultView:Map{"hide":["?loc"]}
+SELECT ?item ?itemLabel ?loc 
     (URI(CONCAT("https://kgs.hozo.jp/sample/details.html?key=",str(?item))) AS ?detail)
     ("■Wikidataでの定義を見る" AS ?detailTitle)   
     (URI(CONCAT("https://www.google.com/maps/dir/現在地/", 
@@ -283,8 +224,7 @@ SELECT ?item ?itemLabel ?loc  ?layer
     (CONCAT("(",SAMPLE(?kana),")") AS ?nameKana) 
     (?itemLabel AS ?name) 
 WHERE {
-#GET-LIST#
-    FILTER(lang(?layer)="ja")
+    ?item wdt:P31/wdt:P279* wd:#CLASS#. #分類の指定
     ?item wdt:P625 ?loc.  #位置情報の取得
     ?item wdt:P17 wd:Q17.
     OPTIONAL{?item wdt:P1814 ?kana.}
@@ -293,7 +233,7 @@ WHERE {
     OPTIONAL{?item wdt:P856 ?web.}
     SERVICE wikibase:label { bd:serviceParam wikibase:language "ja". }
 }
-GROUP BY ?item ?itemLabel ?loc ?layer
+GROUP BY ?item ?itemLabel ?loc
 LIMIT 100000
 </textarea>		
 	</div>
