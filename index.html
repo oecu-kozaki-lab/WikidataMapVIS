@@ -271,7 +271,7 @@ LIMIT 50
         →下記のクエリ内の<B>#CLASS#</B>の部分を，データ検索結果から選択した「分類」に置き換えて検索します．<br>
 <textarea id="query_for_map" class="t_area" rows="10">
 #defaultView:Map{"hide":["?loc","?layer"]}
-SELECT ?item ?itemLabel ?loc  ?layer
+SELECT ?item ?itemLabel ?loc
     (URI(CONCAT("https://kgs.hozo.jp/sample/details.html?key=",str(?item))) AS ?detail)
     ("■Wikidataでの定義を見る" AS ?detailTitle)   
     (URI(CONCAT("https://www.google.com/maps/dir/現在地/", 
