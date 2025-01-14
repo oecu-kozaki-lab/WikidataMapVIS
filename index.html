@@ -114,45 +114,91 @@ async function makeQuery(){
             mesText += '<td>'+getHtmlData(val)+'</td>';			
 		} 
 
-        let mapQuery = document.getElementById("query_for_map").value;
-        if(!document.getElementById("onlyJP").checked){
-            mapQuery = mapQuery.replace("?item wdt:P17 wd:Q17.","");
-        }
+        // let mapQuery = document.getElementById("query_for_map").value;
+        // if(!document.getElementById("onlyJP").checked){
+        //     mapQuery = mapQuery.replace("?item wdt:P17 wd:Q17.","");
+        // }
 
-        let listQuery = "";
+        // let listQuery = "";
         
-        if(data[i]["kind"].value=="分類"){
-            listQuery = "?item wdt:P31/wdt:P279* wd:#CLASS#.\n"+
-                        "wd:#CLASS# rdfs:label ?layer. ";
-        }
-        else if(data[i]["kind"].value=="含む"){
-            listQuery = "wd:#CLASS# wdt:P527 ?item.\n"+
-                        "wd:#CLASS# rdfs:label ?layer. ";
-        }
-        else if(data[i]["kind"].value=="一部"){
-            listQuery = "?item wdt:P361 wd:#CLASS#.\n"+
-                        "wd:#CLASS# rdfs:label ?layer. ";
-        }
-        else if(data[i]["kind"].value=="ついて"){
-            listQuery = "?item p:P31/pq:P642 wd:#CLASS#.\n"+
-                        "wd:#CLASS# rdfs:label ?layer. ";
-        }
+        // if(data[i]["kind"].value=="分類"){
+        //     listQuery = "?item wdt:P31/wdt:P279* wd:#CLASS#.\n"+
+        //                 "wd:#CLASS# rdfs:label ?layer. ";
+        // }
+        // else if(data[i]["kind"].value=="含む"){
+        //     listQuery = "wd:#CLASS# wdt:P527 ?item.\n"+
+        //                 "wd:#CLASS# rdfs:label ?layer. ";
+        // }
+        // else if(data[i]["kind"].value=="一部"){
+        //     listQuery = "?item wdt:P361 wd:#CLASS#.\n"+
+        //                 "wd:#CLASS# rdfs:label ?layer. ";
+        // }
+        // else if(data[i]["kind"].value=="ついて"){
+        //     listQuery = "?item p:P31/pq:P642 wd:#CLASS#.\n"+
+        //                 "wd:#CLASS# rdfs:label ?layer. ";
+        // }
 
-        listQuery = listQuery.replaceAll("#CLASS#",
-             (data[i]["class"].value.replace("http://www.wikidata.org/entity/","")));
-					
-        mesText+='<td><button onclick="window.open('
-				+"'https://query.wikidata.org/embed.html#"
-				+encodeURIComponent(mapQuery.replace("#GET-LIST#",listQuery)
-					)
-                +"'"+')">この分類でMAPを作成する</button></td>';
+        // listQuery = listQuery.replaceAll("#CLASS#",
+        //      (data[i]["class"].value.replace("http://www.wikidata.org/entity/","")));
+	
+        mesText+=`<td><button onclick="showMAP('${data[i]["class"].value.replace("http://www.wikidata.org/entity/","")}','${data[i]["kind"].value}')">この分類でMAPを作成する</button></td>`;
+
+        // mesText+='<td><button onclick="window.open('
+		// 		+"'https://query.wikidata.org/embed.html#"
+		// 		+encodeURIComponent(mapQuery.replace("#GET-LIST#",listQuery)
+		// 			)
+        //         +"'"+')">この分類でMAPを作成する</button></td>';
             
         mesText+="</tr>";
 	}
 	resultArea.innerHTML = mesText+'</table><br><hr>';
 }
 
+function showMAP(classID,kind){
+    console.log(classID+' - '+kind);
 
+    const list = document.getElementById("map-list");
+    const newItem = document.createElement("li");
+    newItem.textContent =`*${classID} - ${kind}`;
+    list.appendChild(newItem);
+
+    let mapQuery = document.getElementById("query_for_map").value;
+    if(!document.getElementById("onlyJP").checked){
+        mapQuery = mapQuery.replace("?item wdt:P17 wd:Q17.","");
+    }
+
+    let listQuery = "";
+    
+    if(kind=="分類"){
+        listQuery = "?item wdt:P31/wdt:P279* wd:#CLASS#.\n"+
+                    "wd:#CLASS# rdfs:label ?layer. ";
+    }
+    else if(kind=="含む"){
+        listQuery = "wd:#CLASS# wdt:P527 ?item.\n"+
+                    "wd:#CLASS# rdfs:label ?layer. ";
+    }
+    else if(kind=="一部"){
+        listQuery = "?item wdt:P361 wd:#CLASS#.\n"+
+                    "wd:#CLASS# rdfs:label ?layer. ";
+    }
+    else if(kind=="ついて"){
+        listQuery = "?item p:P31/pq:P642 wd:#CLASS#.\n"+
+                    "wd:#CLASS# rdfs:label ?layer. ";
+    }
+
+    listQuery = listQuery.replaceAll("#CLASS#",classID);
+					
+    mapURL = "https://query.wikidata.org/embed.html#"
+			+encodeURIComponent(mapQuery.replace("#GET-LIST#",listQuery));
+    
+    window.open(mapURL, '_blank');
+}
+
+function margeMAP() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            const values = Array.from(checkboxes).map(checkbox => checkbox.value);
+            alert(`Checked values: ${values.join(', ')}`);
+        }
 
 </script>
 </head>
@@ -188,6 +234,25 @@ async function makeQuery(){
        <input type="checkbox" id="onlyJP" checked>生成するMAPを「日本国内」に限定する</input>
     <hr> 
 	</div>
+<!-- 生成したMAPリスト表示用の領域 -->
+<div id="map-list_box">
+    <div id="map-list_div"  class="container" style="flex: 1;">
+        <h3>Task List</h3>
+        <ul id="map-list">
+            <li>
+                <label>
+                    <input type="checkbox" name="map" value="map1">一宮[分類] 【×】
+                </label>
+            </li>
+            <li>
+                <label>
+                    <input type="checkbox" name="map" value="map2">西国三十三か所一宮[分類] 【×】
+                </label>
+            </li>
+        </ul>
+        <button onclick="margeMAP()">MAP生成</button>   <button>MAP生成</button>     
+    </div>
+</div>
 <!-- 結果表示用の領域 -->
 	<div id="result_box" style=" display: none;  ">
 		<div id="result_div"  class="container" style="flex: 1;"></div>
