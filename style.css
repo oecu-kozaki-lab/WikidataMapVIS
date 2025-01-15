@@ -124,6 +124,48 @@ table {
   overflow-y: scroll;
 }
 
+ /* リストマーカーを非表示にする */
+ .no-bullets {
+  list-style: none; /* マーカーを非表示に設定 */
+  padding: 0; /* デフォルトの余白をリセット */
+  margin: 0; /* デフォルトのマージンをリセット */
+}
+
+.button-link {
+  display: inline-block; /* インライン要素をブロック化 */
+  padding: 1px 3px; /* 内側の余白を小さめに */
+  background-color: #007BFF; /* 背景色 */
+  color: #fff; /* 文字色 */
+  text-decoration: none; /* 下線を消す */
+  border-radius: 6px; /* 角を丸くする */
+  font-size: 14px; /* 小さめのフォントサイズ */
+  font-weight: bold; /* 太字 */
+  text-align: center; /* テキストを中央揃え */
+  transition: background-color 0.3s ease; /* ホバー時のスムーズな変化 */
+}
+
+/* ホバー時のスタイル */
+.button-link:hover {
+  background-color: #0056b3; /* ホバー時の背景色 */
+}
+
+/* アクティブ時のスタイル */
+.button-link:active {
+  background-color: #003f7f; /* クリック時の背景色 */
+}
+
+.button-del {
+  display: inline-block; /* インライン要素をブロック化 */
+  padding: 1px 3px; /* 内側の余白を小さめに */
+  background-color: #ff2200; /* 背景色 */
+  color: #fff; /* 文字色 */
+  text-decoration: none; /* 下線を消す */
+  border-radius: 4px; /* 角を丸くする */
+  font-size: 14px; /* 小さめのフォントサイズ */
+  font-weight: bold; /* 太字 */
+  text-align: center; /* テキストを中央揃え */
+}
+
 /*Entityの詳細表示ページのLoading 画像用
 （https://www.benricho.org/loading_images/withCSS_04/02.html より） */
 .flower-spinner,  .flower-spinner * {

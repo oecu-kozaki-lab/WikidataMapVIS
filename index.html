@@ -135,7 +135,12 @@ function handleCheckboxChange(checkbox) {
 }
 
 function showMAP(className,classID,kind){
+    document.getElementById('map-list_box').style.display = 'block';
     console.log(className+'['+classID+'] - '+kind);
+
+    const listQuery = getListQuery(classID,kind);
+	mapURL = "https://query.wikidata.org/embed.html#"
+			+encodeURIComponent(getMapQuery(listQuery,false));
 
     const list = document.getElementById("map-list");
     const newItem = document.createElement("li");
@@ -147,16 +152,14 @@ function showMAP(className,classID,kind){
     //checkbox.onclick = function () { handleCheckboxChange(checkbox); };
 
     const label = document.createElement("label");
-    label.innerHTML  = ` ${className}[${getHtmlData("http://www.wikidata.org/entity/"+classID)}]:${kind}`;
+    label.innerHTML  = ` ${className}<span style="font-size: smaller;">[${getHtmlData("http://www.wikidata.org/entity/"+classID)}]</span>:${kind}  <a href="${mapURL}" target="_blank" class="button-link">MAP表示</a>  <a href="#" onclick="removeItem(event)" class="button-del">×</a>`;
     // const label =  `<label>${className} ${getHtmlData("wd:"+classID)}- ${kind}</label>`;
 
     newItem.appendChild(checkbox);
     newItem.appendChild(label);
     list.appendChild(newItem);
 
-    const listQuery = getListQuery(classID,kind);
-	mapURL = "https://query.wikidata.org/embed.html#"
-			+encodeURIComponent(getMapQuery(listQuery,false));
+   
     
     window.open(mapURL, '_blank');
 }
@@ -200,30 +203,43 @@ function getListQuery(classID,kind){
 
 function margeMAP() {
     const checkboxes = document.querySelectorAll('#map-list input[type="checkbox"]:checked');
-            const values = [];
-            for (let i = 0; i < checkboxes.length; i++) {
-                const cls = checkboxes[i].getAttribute("cls");
-                const kind = checkboxes[i].getAttribute("kind");
-                // values.push(checkboxes[i].value);
-                values.push(getListQuery(cls,kind));
-            }
-            // alert(`Checked values: ${values.join(' UNION ')}`);
+    if(checkboxes.length<=1){
+        alert(`合成するMAPを 2 つ以上選択してください`);
+        return;
+    }
+    
+    const values = [];
+    for (let i = 0; i < checkboxes.length; i++) {
+        const cls = checkboxes[i].getAttribute("cls");
+        const kind = checkboxes[i].getAttribute("kind");
+        // values.push(checkboxes[i].value);
+        values.push(getListQuery(cls,kind));
+    }
+    // alert(`Checked values: ${values.join(' UNION ')}`);
 
-            const listQuery = values.join(' UNION ');
-            alert(`Checked values: ${listQuery}`);
+    const listQuery = values.join(' UNION ');
+    // alert(`Checked values: ${listQuery}`);
 
-            mapURL = "https://query.wikidata.org/embed.html#"
-                    +encodeURIComponent(getMapQuery(listQuery,true));
-            
-            window.open(mapURL, '_blank');
-        }
+    mapURL = "https://query.wikidata.org/embed.html#"
+            +encodeURIComponent(getMapQuery(listQuery,true));
+    
+    window.open(mapURL, '_blank');
+}
+
+function removeItem(event) {
+    event.preventDefault(); // デフォルトのリンク動作を無効化
+    const listItem = event.target.closest('li'); // クリックされたリンクの親要素(li)を取得
+    if (listItem) {
+        listItem.remove(); // リスト項目を削除
+    }
+}
 
 </script>
 </head>
 
 <body>
 <header id="head" >
-	<h1>WD巡礼マップ - Wikidataによる巡礼ルート作成</h1>
+	<h1>WD巡礼マップ <span style="font-size: 0.7em; font-weight: normal;">- Wikidataによる巡礼ルート作成</span></h1>
 </header>
 
 <!-- 検索条件設定の領域 -->
@@ -253,22 +269,15 @@ function margeMAP() {
     <hr> 
 	</div>
 <!-- 生成したMAPリスト表示用の領域 -->
-<div id="map-list_box">
+<div id="map-list_box" style=" display: none;  ">
     <div id="map-list_div"  class="container" style="flex: 1;">
-        <h3>Task List</h3>
-        <ul id="map-list">
-            <li>
-                <label>
-                    <input type="checkbox" name="map" value="map1">一宮[分類] 【×】
-                </label>
-            </li>
-            <li>
-                <label>
-                    <input type="checkbox" name="map" value="map2">西国三十三か所一宮[分類] 【×】
-                </label>
-            </li>
+        <h3>作成したMAP</h3>
+        <ul id="map-list" class="no-bullets">
         </ul>
-        <button onclick="margeMAP()">MAP生成</button>   <button>MAP生成</button>     
+        <br>
+        <button onclick="margeMAP()">選択したMAPの合成</button>
+        <!-- &nbsp;&nbsp;
+        <button>QRコードの生成</button>      -->
     </div>
 </div>
 <!-- 結果表示用の領域 -->
