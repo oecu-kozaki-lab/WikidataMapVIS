@@ -114,44 +114,21 @@ async function makeQuery(){
             mesText += '<td>'+getHtmlData(val)+'</td>';			
 		} 
 
-        // let mapQuery = document.getElementById("query_for_map").value;
-        // if(!document.getElementById("onlyJP").checked){
-        //     mapQuery = mapQuery.replace("?item wdt:P17 wd:Q17.","");
-        // }
-
-        // let listQuery = "";
-        
-        // if(data[i]["kind"].value=="分類"){
-        //     listQuery = "?item wdt:P31/wdt:P279* wd:#CLASS#.\n"+
-        //                 "wd:#CLASS# rdfs:label ?layer. ";
-        // }
-        // else if(data[i]["kind"].value=="含む"){
-        //     listQuery = "wd:#CLASS# wdt:P527 ?item.\n"+
-        //                 "wd:#CLASS# rdfs:label ?layer. ";
-        // }
-        // else if(data[i]["kind"].value=="一部"){
-        //     listQuery = "?item wdt:P361 wd:#CLASS#.\n"+
-        //                 "wd:#CLASS# rdfs:label ?layer. ";
-        // }
-        // else if(data[i]["kind"].value=="ついて"){
-        //     listQuery = "?item p:P31/pq:P642 wd:#CLASS#.\n"+
-        //                 "wd:#CLASS# rdfs:label ?layer. ";
-        // }
-
-        // listQuery = listQuery.replaceAll("#CLASS#",
-        //      (data[i]["class"].value.replace("http://www.wikidata.org/entity/","")));
-	
-        mesText+=`<td><button onclick="showMAP('${data[i]["class"].value.replace("http://www.wikidata.org/entity/","")}','${data[i]["kind"].value}')">この分類でMAPを作成する</button></td>`;
-
-        // mesText+='<td><button onclick="window.open('
-		// 		+"'https://query.wikidata.org/embed.html#"
-		// 		+encodeURIComponent(mapQuery.replace("#GET-LIST#",listQuery)
-		// 			)
-        //         +"'"+')">この分類でMAPを作成する</button></td>';
+        mesText+=`<td><button onclick="showMAP('${data[i]["class"].value.replace("http://www.wikidata.org/entity/","")}','${data[i]["kind"].value}')">MAP作成</button></td>`;
             
         mesText+="</tr>";
 	}
 	resultArea.innerHTML = mesText+'</table><br><hr>';
+}
+
+function handleCheckboxChange(checkbox) {
+    const cls = checkbox.getAttribute("cls");
+    const kind = checkbox.getAttribute("kind");
+    if (checkbox.checked) {
+        alert(`You checked: ${checkbox.value}\ncls: ${cls}, kind: ${kind}`);
+    } else {
+        alert(`You unchecked: ${checkbox.value}\ncls: ${cls}, kind: ${kind}`);
+    }
 }
 
 function showMAP(classID,kind){
@@ -159,14 +136,33 @@ function showMAP(classID,kind){
 
     const list = document.getElementById("map-list");
     const newItem = document.createElement("li");
-    newItem.textContent =`*${classID} - ${kind}`;
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = `${classID} - ${kind}`;
+    checkbox.setAttribute("cls", classID);
+    checkbox.setAttribute("kind", kind);
+    checkbox.onclick = function () { handleCheckboxChange(checkbox); };
+
+    const label = document.createElement("label");
+    label.textContent = ` ${classID} - ${kind}`;
+
+    newItem.appendChild(checkbox);
+    newItem.appendChild(label);
     list.appendChild(newItem);
 
     let mapQuery = document.getElementById("query_for_map").value;
     if(!document.getElementById("onlyJP").checked){
         mapQuery = mapQuery.replace("?item wdt:P17 wd:Q17.","");
     }
+    const listQuery = getListQuery(classID,kind);
+					
+    mapURL = "https://query.wikidata.org/embed.html#"
+			+encodeURIComponent(mapQuery.replace("#GET-LIST#",listQuery));
+    
+    window.open(mapURL, '_blank');
+}
 
+function getListQuery(classID,kind){
     let listQuery = "";
     
     if(kind=="分類"){
@@ -186,18 +182,21 @@ function showMAP(classID,kind){
                     "wd:#CLASS# rdfs:label ?layer. ";
     }
 
-    listQuery = listQuery.replaceAll("#CLASS#",classID);
-					
-    mapURL = "https://query.wikidata.org/embed.html#"
-			+encodeURIComponent(mapQuery.replace("#GET-LIST#",listQuery));
-    
-    window.open(mapURL, '_blank');
+    listQuery = "{"+listQuery.replaceAll("#CLASS#",classID)+"}";
+
+    return listQuery;
 }
 
 function margeMAP() {
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-            const values = Array.from(checkboxes).map(checkbox => checkbox.value);
-            alert(`Checked values: ${values.join(', ')}`);
+    const checkboxes = document.querySelectorAll('#map-list input[type="checkbox"]:checked');
+            const values = [];
+            for (let i = 0; i < checkboxes.length; i++) {
+                const cls = checkboxes[i].getAttribute("cls");
+                const kind = checkboxes[i].getAttribute("kind");
+                // values.push(checkboxes[i].value);
+                values.push(getListQuery(cls,kind));
+            }
+            alert(`Checked values: ${values.join(' UNION ')}`);
         }
 
 </script>
