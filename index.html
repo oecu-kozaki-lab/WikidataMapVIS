@@ -114,7 +114,10 @@ async function makeQuery(){
             mesText += '<td>'+getHtmlData(val)+'</td>';			
 		} 
 
-        mesText+=`<td><button onclick="showMAP('${data[i]["class"].value.replace("http://www.wikidata.org/entity/","")}','${data[i]["kind"].value}')">MAP作成</button></td>`;
+        const name = data[i]["classLabel"].value;
+        const cls = data[i]["class"].value.replace("http://www.wikidata.org/entity/","");
+        const kind = data[i]["kind"].value;
+        mesText +=`<td><button onclick="showMAP('${name}','${cls}','${kind}')">MAP作成</button></td>`;
             
         mesText+="</tr>";
 	}
@@ -131,8 +134,8 @@ function handleCheckboxChange(checkbox) {
     }
 }
 
-function showMAP(classID,kind){
-    console.log(classID+' - '+kind);
+function showMAP(className,classID,kind){
+    console.log(className+'['+classID+'] - '+kind);
 
     const list = document.getElementById("map-list");
     const newItem = document.createElement("li");
@@ -141,25 +144,33 @@ function showMAP(classID,kind){
     checkbox.value = `${classID} - ${kind}`;
     checkbox.setAttribute("cls", classID);
     checkbox.setAttribute("kind", kind);
-    checkbox.onclick = function () { handleCheckboxChange(checkbox); };
+    //checkbox.onclick = function () { handleCheckboxChange(checkbox); };
 
     const label = document.createElement("label");
-    label.textContent = ` ${classID} - ${kind}`;
+    label.innerHTML  = ` ${className}[${getHtmlData("http://www.wikidata.org/entity/"+classID)}]:${kind}`;
+    // const label =  `<label>${className} ${getHtmlData("wd:"+classID)}- ${kind}</label>`;
 
     newItem.appendChild(checkbox);
     newItem.appendChild(label);
     list.appendChild(newItem);
 
+    const listQuery = getListQuery(classID,kind);
+	mapURL = "https://query.wikidata.org/embed.html#"
+			+encodeURIComponent(getMapQuery(listQuery,false));
+    
+    window.open(mapURL, '_blank');
+}
+
+function getMapQuery(listQuery,useLayer){
     let mapQuery = document.getElementById("query_for_map").value;
     if(!document.getElementById("onlyJP").checked){
         mapQuery = mapQuery.replace("?item wdt:P17 wd:Q17.","");
     }
-    const listQuery = getListQuery(classID,kind);
-					
-    mapURL = "https://query.wikidata.org/embed.html#"
-			+encodeURIComponent(mapQuery.replace("#GET-LIST#",listQuery));
-    
-    window.open(mapURL, '_blank');
+    if(!useLayer){
+        mapQuery = mapQuery.replaceAll("?loc ?layer","?loc");
+    }
+
+    return mapQuery.replace("#GET-LIST#",listQuery);
 }
 
 function getListQuery(classID,kind){
@@ -196,7 +207,15 @@ function margeMAP() {
                 // values.push(checkboxes[i].value);
                 values.push(getListQuery(cls,kind));
             }
-            alert(`Checked values: ${values.join(' UNION ')}`);
+            // alert(`Checked values: ${values.join(' UNION ')}`);
+
+            const listQuery = values.join(' UNION ');
+            alert(`Checked values: ${listQuery}`);
+
+            mapURL = "https://query.wikidata.org/embed.html#"
+                    +encodeURIComponent(getMapQuery(listQuery,true));
+            
+            window.open(mapURL, '_blank');
         }
 
 </script>
@@ -303,8 +322,11 @@ WHERE {
 }
 UNION
 {  #IDcls#  
-    { ?ins wdt:P31 ?class.
-    ?ins wdt:P625 ?loc.
+    { ?class wdt:P31 ?upper.
+      FILTER EXISTS {
+        ?ins wdt:P31 ?class .
+        ?ins wdt:P625 ?loc.
+      }
     BIND("分類" AS ?kind)
     }
     UNION
@@ -335,7 +357,7 @@ LIMIT 50
         →下記のクエリ内の<B>#CLASS#</B>の部分を，データ検索結果から選択した「分類」に置き換えて検索します．<br>
 <textarea id="query_for_map" class="t_area" rows="10">
 #defaultView:Map{"hide":["?loc","?layer"]}
-SELECT ?item ?itemLabel ?loc
+SELECT ?item ?itemLabel ?loc ?layer
     (URI(CONCAT("https://kgs.hozo.jp/sample/details.html?key=",str(?item))) AS ?detail)
     ("■Wikidataでの定義を見る" AS ?detailTitle)   
     (URI(CONCAT("https://www.google.com/maps/dir/現在地/", 
