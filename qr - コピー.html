@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QRコード生成</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrious/dist/qrious.min.js"></script>
+</head>
+
+<body>
+  <h1>QRコード生成</h1>
+  <label for="urlInput">URLを入力してください:</label>
+  <input type="text" id="urlInput" placeholder="https://example.com" style="width: 300px;">
+  <button id="generateButton">QRコード生成</button>
+
+  <div>
+    <canvas id="qrcode"></canvas>
+  </div>
+
+  <script>
+    // QRiousオブジェクトの初期化
+    const qr = new QRious({
+      element: document.getElementById('qrcode'),
+      size: 300, // QRコードのサイズ
+      level: 'H' // 誤り訂正レベル
+    });
+
+    const url = 'https://wd-map.hozo.jp/index.html?map=';
+        
+
+    function getUrlParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param); // 指定したパラメータの値を返す
+    }
+
+    window.addEventListener('load', async () => {
+      if (getUrlParam('map') != null) {
+        qr.value = url + encodeURIComponent(getUrlParam('map')); // QRコードの値を更新
+        document.getElementById('urlInput').value = url + getUrlParam('map');
+      };
+    });
+
+    // ボタンのクリックイベントを設定
+    document.getElementById('generateButton').addEventListener('click', () => {
+      const map = document.getElementById('urlInput').value; // 入力されたURLを取得
+
+      if (map.trim() === '') {
+        alert('MAPのパラメータを入力してください！'); // 空欄の場合の警告
+        return;
+      }
+      qr.value = url + encodeURIComponent(map); // QRコードの値を更新
+      document.getElementById('urlInput').value = url + map;
+    });
+  </script>
+</body>
+
+</html>
