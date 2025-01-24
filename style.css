@@ -4,9 +4,31 @@ body {
 }
 
 /*ページのタイトル*/
-header > h1 {
-    margin: 0;
-    background-color: #6cb5f1;
+header {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  background-color: #f4f4f4;
+  border-bottom: 2px solid #ccc;
+}
+.logo {
+  max-width: 100px;
+  margin-right: 20px;
+}
+.text-container {
+  display: flex;
+  flex-direction: column;
+}
+.main-title {
+  font-size: 2rem; /* メインタイトルのサイズを大きく */
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+.sub-title {
+  font-size: 1rem; /* サブタイトルのサイズを小さめに */
+  color: #666;
+  margin: 0;
 }
 
 h3 {
@@ -18,6 +40,8 @@ h3 {
     margin: 1em;
     padding: 0;
     text-align: left;
+    max-width: 800px;
+    /* width: 800px; */
 }
 
 .t_area {
@@ -67,6 +91,7 @@ table {
 	table-layout: fixed;
 	word-break: break-all;
 	word-wrap: break-all;
+  margin: 0 auto; /* 水平方向の中央寄せ */
 	}
   table th, table td {
     border: 1px solid rgba(0,0,0,.1);
@@ -131,8 +156,34 @@ table {
   margin: 0; /* デフォルトのマージンをリセット */
 }
 
+/* 行間に区切り線を追加 */
+.no-bullets li {
+  border-bottom: 1px solid #ccc; /* 区切り線を薄いグレーに設定 */
+  padding-bottom: 10px; /* 区切り線の直前に余白を追加 */
+  margin-bottom: 10px; /* 行間を広げるためのマージン */
+}
+
+/* 最後のリスト項目の区切り線を削除 */
+.no-bullets li:last-child {
+  border-bottom: none;
+}
+
+/* 改行後の字下げを設定 */
+.no-bullets li {
+  text-indent: -1em;
+  padding-left: 2em;
+  /* text-indent: 2.5em; 字下げを設定 */
+  /* margin: 0; 段落の余白をリセット */
+}
+
+/* リスト全体の行間を広めに設定 */
+.no-bullets {
+  line-height: 1.5; /* 行間を調整 */
+}
+
 .button-link {
-  display: inline-block; /* インライン要素をブロック化 */
+  /* display: inline-block; インライン要素をブロック化 */
+  white-space: nowrap;
   padding: 1px 3px; /* 内側の余白を小さめに */
   background-color: #007BFF; /* 背景色 */
   color: #fff; /* 文字色 */
@@ -155,7 +206,8 @@ table {
 }
 
 .button-del {
-  display: inline-block; /* インライン要素をブロック化 */
+  /* display: inline-block; インライン要素をブロック化 */
+  white-space: nowrap;
   padding: 1px 3px; /* 内側の余白を小さめに */
   background-color: #ff2200; /* 背景色 */
   color: #fff; /* 文字色 */

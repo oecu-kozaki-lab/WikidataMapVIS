@@ -13,32 +13,9 @@
 <script src="js/sparql-min.js"></script> 
 
 <script>
-function getUrlParam(param) {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(param); // 指定したパラメータの値を返す
-}
+
 
 window.addEventListener('load', async () => {
-    if(getUrlParam('setting')!=null){
-        //alert("setting");
-        document.getElementById('dis_b').style.display = 'block';
-    };
-
-    if(getUrlParam('map')!=null){
-        const maps = getUrlParam('map').split("][");
-        for (const map of maps) {
-            const maplist = map.replace("[",'').replace("]",'').split('/');
-            if(maplist.length==3){
-                document.getElementById('map-list_box').style.display = 'block';
-                addMapList(maplist[0],maplist[1],maplist[2]);
-                //alert("MAP:"+maplist[0]+maplist[1]+maplist[2]);
-            }
-            else{
-                console.log(map+'の形式エラー');
-            }
-        }
-    }
-
 	const sendButton = document.getElementById('send');
     const checkJp = document.getElementById("onlyJP");
 
@@ -104,63 +81,47 @@ async function makeQuery(){
 	
 	dispLoading("検索中...");			
 	const resultData = await sendSPARQLQuery(endpoint, query);
-    //removeLoading();
+    removeLoading();
     
 	document.getElementById('resjson_area').value = JSON.stringify(resultData,null,'  ');
 	
-    //dispLoading("検索中...");
-    await showResult(resultData,resultArea); //クエリ結果の表示
-    removeLoading();
+    showResult(resultData,resultArea); //クエリ結果の表示
 }
 
 /*
  * クエリ結果の表示【テーブル表示用】
  */
- async function showResult (resultData,resultArea){
+ function showResult (resultData,resultArea){
 	//クエリ結果のJSONデータを「ヘッダ部(keys)」と「値(data)」に分けて処理する
 	const keys = resultData.head.vars;
 	const data = resultData.results.bindings;
 
-    let mesText = "<table>\n" ;
-
-    // for(let j = 0; j < keys.length; j++){
-    //     mesText+='<th>' +keys[j] +'</th>';
-    // }
-    mesText+='<tr><th></th><th>分類</th><th>関係</th><th>データ例</th></tr>\n';
+    let mesText = "<table>\n<tr>" ;
+    for(let j = 0; j < keys.length; j++){
+        mesText+='<th>' +keys[j] +'</th>';
+    }
+    mesText+='<th>分類の選択</th>';
+    mesText+="</tr>\n";
 
 	for(let i = 0; i < data.length; i++){
-    //分類の処理
+		mesText+="<tr>";
+		
+    	for(let j = 0; j < keys.length; j++){
+			let val = "-";
+			if(data[i][keys[j]]!=null){
+				val =data[i][keys[j]].value;
+			}
+            mesText += '<td>'+getHtmlData(val)+'</td>';			
+		} 
+
         const name = data[i]["classLabel"].value;
         const cls = data[i]["class"].value.replace("http://www.wikidata.org/entity/","");
         const kind = data[i]["kind"].value;
-    
-        const ask = await askQuery(cls,kind);
-        if(ask==false){
-            console.log(`NO MAP:${name}[${cls}]-${kind}`);
-        }
-        else{
-            mesText+="<tr>";
-            mesText +=`<td><button  class="button-link" onclick="showMAP('${name}','${cls}','${kind}')">MAP作成</button></td>`;           
-            mesText += '<td><b>'
-                    +name+'</b><br><span style="font-size: smaller;">['
-                    +getHtmlData(data[i]["class"].value)
-                    +']</span></td>';	
-            mesText += '<td>'+kind+'</td>';
-
-            //let val = "-";
-            if(data[i]["item"]!=null){
-                //val =data[i]["item"].value;
-                mesText += '<td>'
-                        +data[i]["itemLabel"].value
-                        +'<br><span style="font-size: smaller;">['
-                        +getHtmlData(data[i]["item"].value)
-                        +']</span></td>';			
-            } 
-                    
-            mesText+="</tr>";
-        }
+        mesText +=`<td><button onclick="showMAP('${name}','${cls}','${kind}')">MAP作成</button></td>`;
+            
+        mesText+="</tr>";
 	}
-	resultArea.innerHTML = mesText+'</table>';
+	resultArea.innerHTML = mesText+'</table><br><hr>';
 }
 
 function handleCheckboxChange(checkbox) {
@@ -173,21 +134,10 @@ function handleCheckboxChange(checkbox) {
     }
 }
 
-async function showMAP(className,classID,kind){
+function showMAP(className,classID,kind){
     document.getElementById('map-list_box').style.display = 'block';
     console.log(className+'['+classID+'] - '+kind);
 
-    addMapList(className,classID,kind);
-
-    const listQuery = getListQuery(classID,kind);
-	mapURL = "https://query.wikidata.org/embed.html#"
-			+encodeURIComponent(getMapQuery(listQuery,false));
-
-    window.open(mapURL, '_blank');
-}
-
-function addMapList(className,classID,kind){
-    console.log(`addMapList:${className}/${classID}/${kind}`);
     const listQuery = getListQuery(classID,kind);
 	mapURL = "https://query.wikidata.org/embed.html#"
 			+encodeURIComponent(getMapQuery(listQuery,false));
@@ -196,18 +146,22 @@ function addMapList(className,classID,kind){
     const newItem = document.createElement("li");
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
-    checkbox.value = `${className}/${classID}/${kind}`;
+    checkbox.value = `${classID} - ${kind}`;
     checkbox.setAttribute("cls", classID);
     checkbox.setAttribute("kind", kind);
     //checkbox.onclick = function () { handleCheckboxChange(checkbox); };
 
     const label = document.createElement("label");
-    label.innerHTML  = ` <b>${className}</b><span style="font-size: smaller;">[${getHtmlData("http://www.wikidata.org/entity/"+classID)}]</span>:${kind}  <a href="${mapURL}" target="_blank" class="button-link">MAP表示</a>  <a href="#" onclick="removeItem(event)" class="button-del">×</a>`;
+    label.innerHTML  = ` ${className}<span style="font-size: smaller;">[${getHtmlData("http://www.wikidata.org/entity/"+classID)}]</span>:${kind}  <a href="${mapURL}" target="_blank" class="button-link">MAP表示</a>  <a href="#" onclick="removeItem(event)" class="button-del">×</a>`;
     // const label =  `<label>${className} ${getHtmlData("wd:"+classID)}- ${kind}</label>`;
 
     newItem.appendChild(checkbox);
     newItem.appendChild(label);
     list.appendChild(newItem);
+
+    console.log(document.getElementById('map-list_box').innerHTML);
+
+    window.open(mapURL, '_blank');
 }
 
 function getMapQuery(listQuery,useLayer){
@@ -220,24 +174,6 @@ function getMapQuery(listQuery,useLayer){
     }
 
     return mapQuery.replace("#GET-LIST#",listQuery);
-}
-
-async function askQuery(classID,kind){
-    let endpoint = document.getElementById('ENDPOINT').value;
-    if(endpoint==null){
-        endpoint="https://query.wikidata.org/sparql";
-    }
-    const listQuery = getListQuery(classID,kind);
-    let askquery = `ASK WHERE {
-        ${listQuery}
-        FILTER(lang(?layer)="ja")
-        ?item wdt:P625 ?loc.  #位置情報の取得
-        ?item wdt:P17 wd:Q17.
-    }`;
-
-    const resultData = await sendSPARQLQuery(endpoint,askquery);
-
-    return resultData.boolean;// JSON.stringify(resultData);
 }
 
 function getListQuery(classID,kind){
@@ -290,17 +226,6 @@ function margeMAP() {
     window.open(mapURL, '_blank');
 }
 
-function getMapURL(){
-    const checkboxes = document.querySelectorAll('#map-list input[type="checkbox"]');
-    let mapURL = "https://wd-map.hozo.jp/index.html?map=";
-    for (let i = 0; i < checkboxes.length; i++) {
-        mapURL+='['+checkboxes[i].value+']';
-    }
-
-    console.log(mapURL);
-    return mapURL;
-}
-
 function removeItem(event) {
     event.preventDefault(); // デフォルトのリンク動作を無効化
     const listItem = event.target.closest('li'); // クリックされたリンクの親要素(li)を取得
@@ -313,13 +238,8 @@ function removeItem(event) {
 </head>
 
 <body>
-<header id="head"  class="container">
-	<img src="image/WD-map.png" alt="WD-map ロゴ" class="logo">
-    <div class="text-container">
-        <div class="main-title">WD巡礼マップ</div>
-        <div class="sub-title">Wikidataによる巡礼ルート作成</div>
-    </div>
-    <!-- <a href="/how-to-use" class="nav-link">About</a> -->
+<header id="head" >
+	<h1>WD巡礼マップ <span style="font-size: 0.7em; font-weight: normal;">- Wikidataによる巡礼ルート作成</span></h1>
 </header>
 
 <!-- 検索条件設定の領域 -->
@@ -329,53 +249,50 @@ function removeItem(event) {
         →作成例）「<a href="https://w.wiki/BXg9" target="_blank">一の宮マップ</a>」 
         「<a href="https://w.wiki/BXgq"target="_blank">世界の国際空港</a>」
         </p>
+        <p>
+            【<a href="doc/WikidataMapVIS_HowTo.pdf" target="_blank">使い方</a>】 
+            【<a href="https://qiita.com/koujikozaki/items/197db0dfc555d57338c6" target="_blank">技術解説</a>】
+            【<a href="https://github.com/oecu-kozaki-lab/WikidataMapVIS" target="_blank">ソースコード</a>】
+        </p>
 
+    <h3>MAPの作成</h3>
+        下記の入力欄にMAPで表示したいデータの<b>「分類」</b>(空港，大学，など)，または，<b>「具体例」</b>（出雲大社，関西国際空港，など）<br>
+        を入力して検索してください．<br>
+        <input id="INPUT" type="text" value="空港" autocomplete="off" size="20"/>
+        <input type="button" id="send" value="検索の実行" style="margin-top:8px; "><br>
+        <!-- ラベルの検索設定:<br> -->
+        <label><input type="radio" id="LabelFull" name="labelType" value="full" checked>完全一致</label>
+        <label><input type="radio" id="LabelForward" name="labelType" value="forward">前方一致</label>
+        <label><input type="radio" id="LabelAmbi" name="labelType" value="ambi">あいまい検索</label>
+        <br>
+       <input type="checkbox" id="onlyJP" checked>生成するMAPを「日本国内」に限定する</input>
+    <hr> 
+	</div>
 <!-- 生成したMAPリスト表示用の領域 -->
-<div id="map-list_box" style=" display: none;  ">
-<h3>作成したMAP</h3>
+<div id="map-list_box">
     <div id="map-list_div"  class="container" style="flex: 1;">
+        <h3>作成したMAP</h3>
         <ul id="map-list" class="no-bullets">
+            <li><input type="checkbox" value="Q55491 - 分類" cls="Q55491" kind="分類"><label> 鉄道の地下駅<span style="font-size: smaller;">[<a href="javascript:ShowDetails('details.html?key=wd:Q55491');">wd:Q55491</a>]</span>:分類  <a href="https://query.wikidata.org/embed.html" target="_blank" >MAP表示</a>  <a href="#" onclick="removeItem(event)" >×</a></label></li>
+            <li><input type="checkbox" value="Q55491 - 分類" cls="Q55491" kind="分類"><label> 鉄道の地下駅<span style="font-size: smaller;">[<a href="javascript:ShowDetails('details.html?key=wd:Q55491');">wd:Q55491</a>]</span>:分類  <a href="https://query.wikidata.org/embed.html" target="_blank" class="button-link">MAP表示</a>  <a href="#" onclick="removeItem(event)" class="button-del">×</a></label></li>
+            <li><input type="checkbox" value="Q55491 - 分類" cls="Q55491" kind="分類"><label> 鉄道の地下駅<span style="font-size: smaller;">[<a href="javascript:ShowDetails('details.html?key=wd:Q55491');">wd:Q55491</a>]</span>:分類  <a href="https://query.wikidata.org/embed.html" target="_blank" class="button-link">MAP表示</a>  <a href="#" onclick="removeItem(event)" class="button-del">×</a></label></li>
         </ul>
         <br>
         <button onclick="margeMAP()">選択したMAPの合成</button>
-        &nbsp;&nbsp;
-        <button onclick="getMapURL()">QRコードの生成</button>     
+        <!-- &nbsp;&nbsp;
+        <button>QRコードの生成</button>      -->
     </div>
 </div>
-
-    <h3>MAPの作成</h3>
-        下記の入力欄にMAPで表示したいデータの<b>「分類」</b>(空港，大学，など)，または，<b>「具体例」</b>（出雲大社，関西国際空港，など）を入力して検索してください．<br>
-        <div style="text-align: center;">
-            <input id="INPUT" type="text" value="空港" autocomplete="off" size="20"/>
-            <input type="button" id="send" value="検索の実行" style="margin-top:8px; "><br>
-            <!-- ラベルの検索設定:<br> -->
-            <label><input type="radio" id="LabelFull" name="labelType" value="full" checked>完全一致</label>
-            <label><input type="radio" id="LabelForward" name="labelType" value="forward">前方一致</label>
-            <label><input type="radio" id="LabelAmbi" name="labelType" value="ambi">あいまい検索</label>
-            <br>
-        <input type="checkbox" id="onlyJP" checked>生成するMAPを「日本国内」に限定する</input>
-        </div>
-	</div>
-    
-
 <!-- 結果表示用の領域 -->
-	<div id="result_box" style=" display: none;">
-         
+	<div id="result_box" style=" display: none;  ">
 		<div id="result_div"  class="container" style="flex: 1;"></div>
 	</div>
-<hr> 
-    <p style="text-align: center;">
-        【<a href="doc/WikidataMapVIS_HowTo.pdf" target="_blank">使い方</a>】 
-        【<a href="https://qiita.com/koujikozaki/items/197db0dfc555d57338c6" target="_blank">技術解説</a>】
-        【<a href="https://github.com/oecu-kozaki-lab/WikidataMapVIS" target="_blank">ソースコード</a>】
-    </p>
-
 <!-- 下記の「クエリの表示・非表示」ボタンは，必要がなければコメントアウトしてもよい  -->
 <div style="margin-top:4px;">
-	<input type="button" id="dis_b" value="詳細設定の表示" style=" display:none"
+	<input type="button" id="dis_b" value="詳細設定の表示"
 		onclick="document.getElementById('query').style.display = 'block';
 		document.getElementById('dis_b').style.display = 'none';
-		document.getElementById('none_b').style.display = 'none';">
+		document.getElementById('none_b').style.display = 'block';">
 	<input type="button" id="none_b"  value="詳細設定の非表示" style="display:none"
 		onclick="document.getElementById('query').style.display = 'none';
 		document.getElementById('dis_b').style.display = 'block';
@@ -417,7 +334,7 @@ WHERE {
 }
 UNION
 {  #IDcls#  
-    { ?class wdt:P279 ?upper.
+    { ?class wdt:P31 ?upper.
       FILTER EXISTS {
         ?ins wdt:P31 ?class .
         ?ins wdt:P625 ?loc.
@@ -440,7 +357,7 @@ UNION
 }
 }
 SERVICE wikibase:label { bd:serviceParam wikibase:language "ja, en". }
-}ORDER BY ?class
+}
 LIMIT 50    
 </textarea><br>
 		<b>データ検索用のクエリ（置き換え後）</b>：<br>					

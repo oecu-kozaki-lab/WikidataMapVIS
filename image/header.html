@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WD巡礼マップ - Wikidataによる巡礼ルート作成</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+            border-bottom: 2px solid #ccc;
+        }
+        .logo {
+            max-width: 100px;
+            margin-right: 20px;
+        }
+        .text-container {
+            display: flex;
+            flex-direction: column;
+        }
+        .main-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            margin: 0;
+        }
+        .sub-title {
+            font-size: 1rem;
+            color: #666;
+            margin: 0;
+        }
+        .menu {
+            position: relative;
+        }
+        .menu-button {
+            font-size: 1rem;
+            color: #333;
+            background-color: #f4f4f4;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .menu-button:hover {
+            background-color: #e0e0e0;
+        }
+        .menu-button::after {
+            content: "▼";
+            font-size: 0.8rem;
+        }
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+            flex-direction: column;
+            padding: 10px 0;
+        }
+        .dropdown a {
+            font-size: 1rem;
+            color: #007BFF;
+            text-decoration: none;
+            padding: 10px 20px;
+            display: block;
+        }
+        .dropdown a:hover {
+            background-color: #f4f4f4;
+        }
+        .dropdown.active {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div style="display: flex; align-items: center;">
+            <img src="WD-map.png" alt="WD-map ロゴ" class="logo">
+            <div class="text-container">
+                <div class="main-title">WD巡礼マップ</div>
+                <div class="sub-title">Wikidataによる巡礼ルート作成</div>
+            </div>
+        </div>
+        <div class="menu">
+            <button class="menu-button">メニュー</button>
+            <div class="dropdown">
+                <a href="/about">WD巡礼マップについて</a>
+                <a href="/how-to-use">使い方</a>
+                <a href="/tech-info">技術情報</a>
+            </div>
+        </div>
+    </header>
+    <script>
+        const menuButton = document.querySelector('.menu-button');
+        const dropdown = document.querySelector('.dropdown');
+
+        menuButton.addEventListener('click', () => {
+            dropdown.classList.toggle('active');
+        });
+
+        // ページ外をクリックしたときに閉じる
+        document.addEventListener('click', (event) => {
+            if (!event.target.closest('.menu')) {
+                dropdown.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
