@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QRコード生成</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrious/dist/qrious.min.js"></script>
+</head>
+<body>
+  <h1>QRコード生成</h1>
+  <label for="urlInput">URLを入力してください:</label>
+  <input type="text" id="urlInput" placeholder="https://example.com" style="width: 300px;">
+  <button id="generateButton">QRコード生成</button>
+  
+  <div>
+    <canvas id="qrcode"></canvas>
+  </div>
+
+  <script>
+    // QRiousオブジェクトの初期化
+    const qr = new QRious({
+      element: document.getElementById('qrcode'),
+      size: 200, // QRコードのサイズ
+      level: 'H' // 誤り訂正レベル
+    });
+
+    // ボタンのクリックイベントを設定
+    document.getElementById('generateButton').addEventListener('click', () => {
+      const url = document.getElementById('urlInput').value; // 入力されたURLを取得
+
+      if (url.trim() === '') {
+        alert('URLを入力してください！'); // 空欄の場合の警告
+        return;
+      }
+
+      qr.value = url; // QRコードの値を更新
+    });
+  </script>
+</body>
+</html>
