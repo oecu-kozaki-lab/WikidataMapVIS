@@ -258,6 +258,33 @@ iframe {
   /* テキストを中央揃え */
 }
 
+button {
+  font-size: 1em;
+  padding: 5px 5px;
+}
+
+.button-MAP {
+  /* text-decoration: none; */
+  font-size: 14px;
+  padding: 5px;
+  border-radius: 5px;
+  display: inline-block;
+  margin: 2px;
+  /* background-color: #f26b17;
+  color: white; */
+}
+
+/* .button-QR {
+  text-decoration: none;
+  font-size: 14px;
+  padding: 5px;
+  border-radius: 5px;
+  display: inline-block;
+  margin: 2px;
+  background-color: #f2bb17;
+  color: white;
+} */
+
 .button-X {
   text-decoration: none;
   font-size: 14px;
@@ -315,6 +342,26 @@ iframe {
     height: 16px;
 }
 
+.form-container {
+  display: flex;
+  flex-direction: column; /* 縦に並べる */
+  gap: 20px; /* 各項目の間にスペース */
+  max-width: 400px; /* レイアウトの幅を制限 */
+}
+select {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid #007BFF;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+select:disabled {
+  background-color: #e9ecef; /* 無効なリストの背景色 */
+  cursor: not-allowed;
+}
 
 /*Entityの詳細表示ページのLoading 画像用
 （https://www.benricho.org/loading_images/withCSS_04/02.html より） */

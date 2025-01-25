@@ -30,10 +30,6 @@
     <link rel="stylesheet" href="style.css">
     <script src="js/sparql-min.js"></script>
     <script src="js/wd-map.js"></script>
-
-    <!-- 選択用データ -->
-    <script src="js/countries.js"></script>
-    <script src="js/pref.js"></script>
 </head>
 
 <body>
@@ -50,11 +46,11 @@
     <div id="menu" class="container">
         <div style="margin-top:4px;">
             <!-- <div style="display: flex; justify-content: center;"> -->
-            <p style="margin:0px; text-align: center;">Wikidataに登録されている位置情報をもとに<b>「いろんな分類のMAP」</b>を作成します．<br>
+            <p style="margin:0px; text-align: center;" >Wikidataに登録されている位置情報をもとに<b>「いろんな分類のMAP」</b>を作成します．<br>
                 →作成例）「<a href="https://w.wiki/BXg9" target="_blank">一の宮マップ</a>」
                 「<a href="https://w.wiki/BXgq" target="_blank">世界の国際空港</a>」
             </p>
-            <!-- </div> -->
+        <!-- </div> -->
             <!-- 生成したMAPリスト表示用の領域 -->
             <div id="map-list_box" style=" display: none;  ">
                 <h3>作成したMAP</h3>
@@ -69,12 +65,11 @@
                     <button onclick="getMapURL()">QRコードの生成</button>
                 </div>
             </div>
-
+            
             <h3>MAPの作成</h3>
             下記の入力欄にMAPで表示したいデータの<b>「分類」</b>(空港，大学，など)，または，<b>「具体例」</b>（出雲大社，関西国際空港，など）を入力して検索してください．<br>
             <div style="text-align: center;">
-                <input id="INPUT" type="text" style="font-size: 1em; padding: 5px 5px;" value="神社" autocomplete="off"
-                    size="20" />
+                <input id="INPUT" type="text" style="font-size: 1em; padding: 5px 5px;" value="神社" autocomplete="off" size="20" />
                 <button id="send" style="margin-top:8px; ">検索の実行</button><br>
                 <!-- <input type="button" id="send" value="検索の実行" style="margin-top:8px; "><br> -->
                 <!-- ラベルの検索設定:<br> -->
@@ -82,69 +77,12 @@
                 <label><input type="radio" id="LabelForward" name="labelType" value="forward">前方一致</label>
                 <label><input type="radio" id="LabelAmbi" name="labelType" value="ambi">あいまい検索</label>
                 <br>
-
+                
             </div>
-            
-            <div class="list-container">
-                <div style=" display: flex; justify-content: center;">
-                    <label><b>MAP生成のエリア</b>：
-                        <input type="radio" name="area-select" id="JapanMap" value="JapanMap" checked>
-                        日本に限定
-                    </label>
-                    <label>
-                        <input type="radio" name="area-select" id="WorldMap" value="WorldMap">
-                        世界地図
-                    </label>
-                    <label>
-                        <input type="radio" name="area-select" id="OtherMap" value="OtherMap">
-                        詳細設定
-                    </label>
-                </div>
-            </div>
-            <div style=" display: flex; justify-content: center;">
-
-                <div id="areaSelect" class="form-container" style="display: none;">
-                    <!-- <div>
-                        <input type="radio" id="enableWorldArea" name="listToggle">
-                        <label for="WorldArea">世界の地域を選択:</label>
-                        <select id="WorldArea" name="WorldArea" disabled="true">
-                            <option value="Q15">アフリカ</option>
-                            <option value="Q828">アメリカ</option>
-                            <option value="Q48">アジア</option>
-                            <option value="Q46">ヨーロッパ</option>                            
-                            <option value="Q55643">オセアニア</option>
-                        </select>
-                    </div> -->
-                    <div>
-                        <input type="radio" id="enableCountries" name="listToggle" checked>
-                        <label for="countries">国を選択:</label>
-                        <select id="countries" name="countries">
-                            <!-- JSONから動的に生成 -->
-                        </select>
-                    </div>
-                    <div>
-                        <input type="radio" id="enableJpArea" name="listToggle">
-                        <label for="JpArea">日本の地域を選択:</label>
-                        <select id="JpArea" name="JpArea" disabled="true">
-                            <option value="Q23774089">北海道地方</option>
-                            <option value="Q129465">東北地方</option>
-                            <option value="Q132480">関東地方</option>
-                            <option value="Q381025">北陸地方</option>                            
-                            <option value="Q398989">東海地方</option>
-                            <option value="Q164256">近畿地方</option>
-                            <option value="Q127864">中国地方</option>
-                            <option value="Q60213044">四国地方</option>
-                            <option value="Q13393883">九州地方</option>
-                        </select>
-                    </div>
-                    <div>
-                        <input type="radio" id="enablePrefectures" name="listToggle">
-                        <label for="prefectures">都道府県を選択:</label>
-                        <select id="prefectures" name="prefectures">
-                            <!-- JSONから動的に生成 -->
-                        </select>
-                    </div>
-                </div>
+            <div class="area-option">
+                <!-- <label>MAPの表示エリア</label><br> -->
+                <!-- <input type="checkbox" id="onlyJP" checked>生成するMAPを「日本国内」に限定する</input> -->
+                <input type="checkbox" id="onlyJP" checked>生成するMAPを「日本国内」に限定する</input>
             </div>
         </div>
 

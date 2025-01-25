@@ -26,6 +26,9 @@ window.addEventListener('load', async () => {
         // }
     }
 
+    //エリア選択の設定
+    setAreaLists();
+
     const sendButton = document.getElementById('send');
     const checkJp = document.getElementById("onlyJP");
 
@@ -34,9 +37,9 @@ window.addEventListener('load', async () => {
         makeQuery();
     }, false);
 
-    checkJp.addEventListener('change', async () => {
-        makeQuery();
-    }, false);
+    // checkJp.addEventListener('change', async () => {
+    //     makeQuery();
+    // }, false);
 
 }, false);
 
@@ -199,9 +202,20 @@ function addMapList(className, classID, kind) {
 
 function getMapQuery(listQuery, useLayer) {
     let mapQuery = document.getElementById("query_for_map").value;
-    if (!document.getElementById("onlyJP").checked) {
+    if (document.getElementById('JapanMap').checked) {
+        console.log("Area==>Japan");
+        //mapQuery = mapQuery.replace("?item wdt:P17 wd:Q17.", "");
+    }else if (document.getElementById('WorldMap').checked) {
         mapQuery = mapQuery.replace("?item wdt:P17 wd:Q17.", "");
+        console.log("Area==>Wolrd");
+    }else if (document.getElementById('OtherMap').checked) {
+        const area = getSelectedArea();
+        //"?item wdt:P131|wdt:P131/wdt:P131|wdt:P131/wdt:P131/wdt:P131 wd:Q120730.";
+        mapQuery = mapQuery.replace("?item wdt:P17 wd:Q17.", area);
+        console.log("Area==>Other");
     }
+
+
     if (!useLayer) {
         mapQuery = mapQuery.replaceAll("?loc ?layer", "?loc");
     }
@@ -307,6 +321,27 @@ function setMapList(mapsurl) {
             console.log(map + 'の形式エラー');
         }
     }
+
+    // X (Twitter) シェアボタン がURLのエンコードが上手く認識されず保留
+    // const encodedurl = 'https://wd-map.hozo.jp/qr.html?map-qr='+encodeURIComponent(mapsurl);
+    // console.log(encodedurl);
+
+    // // URLをエンコード
+    // const encodedUrl = encodeURIComponent('https://wd-map.hozo.jp/qr.html?map-qr='+mapsurl.replaceAll("[","").replaceAll("]",""));
+    // const encodedText = encodeURIComponent('WD巡礼マップ - Wikidataによる巡礼ルート作成');
+    // <!-- X (Twitter) シェアボタン -->
+    // <a href="https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}"
+    //   target="_blank" class="button-X"> X で共有
+    // </a>
+
+    let shareButtons = `
+          <!-- Facebook シェアボタン -->
+          <a href="https://www.facebook.com/sharer/sharer.php?u=https://wd-map.hozo.jp/qr.html?map-qr=${mapsurl}" target="_blank" class="button-FB">Facebookで共有</a>
+
+          <!-- LINE シェアボタン -->
+          <a href="https://social-plugins.line.me/lineit/share?url=https://wd-map.hozo.jp/qr.html?map-qr=${mapsurl}" target="_blank" class="button-LINE">LINEで共有</a>`;
+    
+    document.getElementById("shareButtons").innerHTML=shareButtons;
 }
 
 function checkAllMpas() {
@@ -325,4 +360,163 @@ function removeItem(event) {
     if (listItem) {
         listItem.remove(); // リスト項目を削除
     }
+}
+
+// 選択リストを生成する関数
+function populateCountryList() {
+    const selectElement = document.getElementById('countries');
+
+    countries.forEach(country => {
+        // <option>要素を作成
+        const option = document.createElement('option');
+        option.value = country.item; // Qコードをvalueに設定
+        option.textContent = country.itemLabel; // 国名を表示
+
+        // デフォルトで日本を選択
+        if (country.item === 'Q17') {
+            option.selected = true;
+        }
+
+        // <select>に追加
+        selectElement.appendChild(option);
+    });
+}
+
+// 選択リストを生成する関数
+function populatePrefectureList() {
+    const selectElement = document.getElementById('prefectures');
+
+    pref.forEach(prefecture => {
+        // <option>要素を作成
+        const option = document.createElement('option');
+        option.value = prefecture.item; // Qコードをvalueに設定
+        option.textContent = prefecture.itemLabel; // 都道府県名を表示
+
+        // デフォルトで大阪府を選択
+        if (prefecture.item === 'Q122723') {
+            option.selected = true;
+        }
+
+        // <select>に追加
+        selectElement.appendChild(option);
+    });
+
+    selectElement.disabled = true; // 都道府県リストを無効化
+}
+
+function setAreaLists(){
+    // ページ読み込み時に選択リストを生成
+    populatePrefectureList();
+    // ページ読み込み時に選択リストを生成
+    populateCountryList();
+
+    // 各リストとラジオボタンを取得
+    // const WorldAreaRadio = document.getElementById('enableWorldArea');
+    // const WorldAreaSelect = document.getElementById('WorldArea');
+    
+    const countriesRadio = document.getElementById('enableCountries');
+    const countriesSelect = document.getElementById('countries');
+    
+    const prefecturesRadio = document.getElementById('enablePrefectures');
+    const prefecturesSelect = document.getElementById('prefectures');
+
+    const JpAreaRadio = document.getElementById('enableJpArea');
+    const JpAreaSelect = document.getElementById('JpArea');
+
+    
+    const areaSelectLists = document.getElementById('areaSelect');
+
+    document.getElementById('JapanMap').addEventListener('change', () => {
+        areaSelectLists.style.display = 'none';
+        // alert(document.getElementById('JapanMap').checked);
+    });
+    document.getElementById('WorldMap').addEventListener('change', () => {
+        areaSelectLists.style.display = 'none';
+        // alert("WorldMap");
+    });
+    document.getElementById('OtherMap').addEventListener('change', () => {
+        areaSelectLists.style.display = 'block';
+        // alert("OtherMap");
+    });
+
+    // イベントリスナーを設定 
+    // WorldAreaRadio.addEventListener('change', () => {
+    //     WorldAreaSelect.disabled = false;
+    //     countriesSelect.disabled = true; 
+    //     JpAreaSelect.disabled = true;
+    //     prefecturesSelect.disabled = true; // 都道府県リストを無効化
+    // });
+
+    countriesRadio.addEventListener('change', () => {
+        countriesSelect.disabled = false; // 国リストを有効化
+        JpAreaSelect.disabled = true;
+        prefecturesSelect.disabled = true; // 都道府県リストを無効化
+    });
+
+    JpAreaRadio.addEventListener('change', () => {
+        JpAreaSelect.disabled = false;
+        countriesSelect.disabled = true; // 国リストを無効化
+        prefecturesSelect.disabled = true; // 都道府県リストを有効化
+    });
+
+    prefecturesRadio.addEventListener('change', () => {
+        countriesSelect.disabled = true; // 国リストを無効化
+        JpAreaSelect.disabled = true;
+        prefecturesSelect.disabled = false; // 都道府県リストを有効化
+    });
+
+    // // OKボタンをクリックしたときの動作
+    // okButton.addEventListener('click', () => {
+    //     let activeList, selectedOption;
+
+    //     // アクティブなリストを判定
+    //     if (!countriesSelect.disabled) {
+    //         activeList = '国';
+    //         selectedOption = countriesSelect.options[countriesSelect.selectedIndex];
+    //     } else if (!prefecturesSelect.disabled) {
+    //         activeList = '都道府県';
+    //         selectedOption = prefecturesSelect.options[prefecturesSelect.selectedIndex];
+    //     }
+
+    //     // 選択されたラベルと値を表示
+    //     resultDiv.textContent = `${activeList}: ${selectedOption.text} (value: ${selectedOption.value})`;
+    // });
+}
+
+function getSelectedArea(){
+    const countriesSelect = document.getElementById('countries');
+    const prefecturesSelect = document.getElementById('prefectures');
+    const JpAreaSelect = document.getElementById('JpArea');
+    // const WorldAreaSelect = document.getElementById('WorldArea');
+ 
+    let activeList, selectedOption, areaQuery;
+
+    // アクティブなリストを判定
+    if (!countriesSelect.disabled) {
+        activeList = '国';
+        selectedOption = countriesSelect.options[countriesSelect.selectedIndex];
+        areaQuery = `?item wdt:P17 wd:${selectedOption.value}.`
+    } else if (!prefecturesSelect.disabled) {
+        activeList = '日本の地域';
+        selectedOption = prefecturesSelect.options[prefecturesSelect.selectedIndex];
+        areaQuery = `?item wdt:P131|wdt:P131/wdt:P131|wdt:P131/wdt:P131/wdt:P131 wd:${selectedOption.value}.`
+    } 
+    else if(!JpAreaSelect.disabled){
+        activeList = '都道府県';
+        selectedOption = JpAreaSelect.options[JpAreaSelect.selectedIndex];
+        areaQuery = `wd:${selectedOption.value} wdt:P150|wdt:P527 ?area .
+        ?area wdt:P31 wd:Q50337.
+        ?item wdt:P131|wdt:P131/wdt:P131|wdt:P131/wdt:P131/wdt:P131 ?area.`;
+    }
+//     else if(!WorldAreaSelect.disabled){
+//         activeList = '世界の地域';
+//         selectedOption = WorldAreaSelect.options[WorldAreaSelect.selectedIndex];
+//         areaQuery = `wd:${selectedOption.value} wdt:P527/wdt:P17|wdt:P527/wdt:P150|wdt:P527/wdt:P527 ?area.
+//   ?area wdt:P297 ?code.`;
+//     }
+
+    return areaQuery;
+    // 選択されたラベルと値を表示
+    // const 
+    //resultDiv.textContent = ;
 }
