@@ -90,32 +90,36 @@
         <div id="map-list_div" class="container" style=" display: flex; justify-content: center;">
           <ul id="map-list" class="no-bullets" >
           </ul>
-          <br>
         </div>
-        <div style=" display: flex; justify-content: center;">
+        <div style=" display: flex; justify-content: center; margin-bottom:1em;">   
           <button onclick="margeMAP()">選択したMAPの合成</button>
           &nbsp;&nbsp;
-          <button onclick="getMapURL()">QRコードの生成</button>
-          <!-- X (Twitter) シェアボタン -->
+          <button id="qrOFF" onclick=
+            "document.getElementById('qrcode').style.display = 'none';
+             document.getElementById('qrOFF').style.display = 'none';
+             document.getElementById('qrON').style.display = 'block';"
+            >QRコードを非表示</button>    
+          <button  id="qrON" style=" display:none; " onclick=
+             "document.getElementById('qrcode').style.display = 'block';
+              document.getElementById('qrOFF').style.display = 'block';
+              document.getElementById('qrON').style.display = 'none';"
+             >QRコードを表示</button>      
+        </div>
+        <div style=" display: flex; justify-content: center;">
+           <!-- X (Twitter) シェアボタン -->
     <a href="https://twitter.com/intent/tweet?text=WD巡礼マップ - Wikidataによる巡礼ルート作成&url=https://wd-map.hozo.jp/" 
-    target="_blank" 
-    style="text-decoration: none; font-size: 16px; padding: 10px; background-color: #1DA1F2; color: white; border-radius: 5px; display: inline-block; margin: 5px;">
-     X (Twitter)でシェア
+    target="_blank" class="button-X"> X で共有
  </a>
 
  <!-- Facebook シェアボタン -->
  <a href="https://www.facebook.com/sharer/sharer.php?u=https://wd-map.hozo.jp/" 
     target="_blank" 
-    style="text-decoration: none; font-size: 16px; padding: 10px; background-color: #1877F2; color: white; border-radius: 5px; display: inline-block; margin: 5px;">
-     Facebookでシェア
- </a>
+    class="button-FB">Facebookで共有</a>
 
  <!-- LINE シェアボタン -->
  <a href="https://social-plugins.line.me/lineit/share?url=https://wd-map.hozo.jp/" 
     target="_blank" 
-    style="text-decoration: none; font-size: 16px; padding: 10px; background-color: #00C300; color: white; border-radius: 5px; display: inline-block; margin: 5px;">
-     LINEでシェア
- </a>
+    class="button-LINE">LINEで共有</a>
         </div>
       </div>
 

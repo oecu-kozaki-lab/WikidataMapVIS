@@ -1,6 +1,6 @@
 body {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 /*ページのタイトル*/
@@ -11,22 +11,28 @@ header {
   background-color: #f4f4f4;
   border-bottom: 2px solid #ccc;
 }
+
 .logo {
   max-width: 100px;
   margin-right: 20px;
 }
+
 .text-container {
   display: flex;
   flex-direction: column;
 }
+
 .main-title {
-  font-size: 2rem; /* メインタイトルのサイズを大きく */
+  font-size: 2rem;
+  /* メインタイトルのサイズを大きく */
   font-weight: bold;
   color: #333;
   margin: 0;
 }
+
 .sub-title {
-  font-size: 1rem; /* サブタイトルのサイズを小さめに */
+  font-size: 1rem;
+  /* サブタイトルのサイズを小さめに */
   color: #666;
   margin: 0;
 }
@@ -37,18 +43,18 @@ h3 {
 }
 
 .container {
-    margin: 1em;
-    padding: 0;
-    text-align: left;
-    max-width: 800px;
-    /* width: 800px; */
+  margin: 1em;
+  padding: 0;
+  text-align: left;
+  max-width: 800px;
+  /* width: 800px; */
 }
 
 .t_area {
-    overflow:auto;
-    width: 100%;
-    /* height: 15vh; */
-    border: solid 1px #ccc;
+  overflow: auto;
+  width: 100%;
+  /* height: 15vh; */
+  border: solid 1px #ccc;
 }
 
 .result_div {
@@ -76,42 +82,46 @@ h3 {
   left: 0;
   background-color: #fff;
   opacity: 0.8;
-   }
-  
-   #loading .loadingMsg {
+}
+
+#loading .loadingMsg {
   display: table-cell;
   text-align: center;
   vertical-align: middle;
   padding-top: 140px;
   background: url("image/load-earth.gif") center center no-repeat;
-   } 
+}
 
 /*検索結果一覧の表*/
 table {
-	table-layout: fixed;
-	word-break: break-all;
-	word-wrap: break-all;
-  margin: 0 auto; /* 水平方向の中央寄せ */
-	}
-  table th, table td {
-    border: 1px solid rgba(0,0,0,.1);
-    padding: .6em;
-    text-align: center;
-    background: #fff;
-  }
-  table th{
-    border-collapse: collapse;
-    border: 1px solid gray;
-    background: #afeeee;
-    color: black;
-    font-weight: bold;
-    }
-  
+  table-layout: fixed;
+  word-break: break-all;
+  word-wrap: break-all;
+  margin: 0 auto;
+  /* 水平方向の中央寄せ */
+}
 
- iframe {
-	border: none;
-	height: 100%;
-	width: 100%;
+table th,
+table td {
+  border: 1px solid rgba(0, 0, 0, .1);
+  padding: .6em;
+  text-align: center;
+  background: #fff;
+}
+
+table th {
+  border-collapse: collapse;
+  border: 1px solid gray;
+  background: #afeeee;
+  color: black;
+  font-weight: bold;
+}
+
+
+iframe {
+  border: none;
+  height: 100%;
+  width: 100%;
 }
 
 /*Entityの詳細表示ページのタイトル*/
@@ -124,21 +134,25 @@ table {
 　　https://haniwaman.com/parts/post-4069 より  */
 .result-table {
   border-collapse: collapse;
-  border: 1px solid rgba(0,0,0,.1);
+  border: 1px solid rgba(0, 0, 0, .1);
   table-layout: fixed;
   width: 100%;
 }
-.result-table th, .result-table td {
-  border: 1px solid rgba(0,0,0,.1);
+
+.result-table th,
+.result-table td {
+  border: 1px solid rgba(0, 0, 0, .1);
   padding: .6em;
   text-align: center;
   background: #fff;
 }
+
 .result-table th {
   background: #E0FFFF;
   color: black;
   /* font-weight: bold; */
 }
+
 .result-table th:first-child {
   width: 120px;
 }
@@ -149,18 +163,24 @@ table {
   overflow-y: scroll;
 }
 
- /* リストマーカーを非表示にする */
- .no-bullets {
-  list-style: none; /* マーカーを非表示に設定 */
-  padding: 0; /* デフォルトの余白をリセット */
-  margin: 0; /* デフォルトのマージンをリセット */
+/* リストマーカーを非表示にする */
+.no-bullets {
+  list-style: none;
+  /* マーカーを非表示に設定 */
+  padding: 0;
+  /* デフォルトの余白をリセット */
+  margin: 0;
+  /* デフォルトのマージンをリセット */
 }
 
 /* 行間に区切り線を追加 */
 .no-bullets li {
-  border-bottom: 1px solid #ccc; /* 区切り線を薄いグレーに設定 */
-  padding-bottom: 10px; /* 区切り線の直前に余白を追加 */
-  margin-bottom: 10px; /* 行間を広げるためのマージン */
+  border-bottom: 1px solid #ccc;
+  /* 区切り線を薄いグレーに設定 */
+  padding-bottom: 10px;
+  /* 区切り線の直前に余白を追加 */
+  margin-bottom: 10px;
+  /* 行間を広げるためのマージン */
 }
 
 /* 最後のリスト項目の区切り線を削除 */
@@ -178,87 +198,168 @@ table {
 
 /* リスト全体の行間を広めに設定 */
 .no-bullets {
-  line-height: 1.5; /* 行間を調整 */
+  line-height: 1.5;
+  /* 行間を調整 */
 }
 
 .button-link {
   /* display: inline-block; インライン要素をブロック化 */
   white-space: nowrap;
-  padding: 1px 3px; /* 内側の余白を小さめに */
-  background-color: #007BFF; /* 背景色 */
-  color: #fff; /* 文字色 */
-  text-decoration: none; /* 下線を消す */
-  border-radius: 6px; /* 角を丸くする */
-  font-size: 14px; /* 小さめのフォントサイズ */
-  font-weight: bold; /* 太字 */
-  text-align: center; /* テキストを中央揃え */
-  transition: background-color 0.3s ease; /* ホバー時のスムーズな変化 */
+  padding: 1px 3px;
+  /* 内側の余白を小さめに */
+  background-color: #007BFF;
+  /* 背景色 */
+  color: #fff;
+  /* 文字色 */
+  text-decoration: none;
+  /* 下線を消す */
+  border-radius: 6px;
+  /* 角を丸くする */
+  font-size: 14px;
+  /* 小さめのフォントサイズ */
+  font-weight: bold;
+  /* 太字 */
+  text-align: center;
+  /* テキストを中央揃え */
+  transition: background-color 0.3s ease;
+  /* ホバー時のスムーズな変化 */
 }
 
 /* ホバー時のスタイル */
 .button-link:hover {
-  background-color: #0056b3; /* ホバー時の背景色 */
+  background-color: #0056b3;
+  /* ホバー時の背景色 */
 }
 
 /* アクティブ時のスタイル */
 .button-link:active {
-  background-color: #003f7f; /* クリック時の背景色 */
+  background-color: #003f7f;
+  /* クリック時の背景色 */
 }
 
 .button-del {
   /* display: inline-block; インライン要素をブロック化 */
   white-space: nowrap;
-  padding: 1px 3px; /* 内側の余白を小さめに */
-  background-color: #ff2200; /* 背景色 */
-  color: #fff; /* 文字色 */
-  text-decoration: none; /* 下線を消す */
-  border-radius: 4px; /* 角を丸くする */
-  font-size: 14px; /* 小さめのフォントサイズ */
-  font-weight: bold; /* 太字 */
-  text-align: center; /* テキストを中央揃え */
+  padding: 1px 3px;
+  /* 内側の余白を小さめに */
+  background-color: #ff2200;
+  /* 背景色 */
+  color: #fff;
+  /* 文字色 */
+  text-decoration: none;
+  /* 下線を消す */
+  border-radius: 4px;
+  /* 角を丸くする */
+  font-size: 14px;
+  /* 小さめのフォントサイズ */
+  font-weight: bold;
+  /* 太字 */
+  text-align: center;
+  /* テキストを中央揃え */
 }
+
+.button-X {
+  text-decoration: none;
+  font-size: 14px;
+  padding: 5px;
+  border-radius: 5px;
+  display: inline-block;
+  margin: 2px;
+  background-color: #1DA1F2;
+  color: white;
+}
+
+.button-FB {
+  text-decoration: none;
+  font-size: 14px;
+  padding: 5px;
+  border-radius: 5px;
+  display: inline-block;
+  margin: 2px;
+  background-color: #1877F2;
+  color: white;
+}
+
+.button-LINE {
+  text-decoration: none;
+  font-size: 14px;
+  padding: 5px;
+  border-radius: 5px;
+  display: inline-block;
+  margin: 2px;
+  background-color: #00C300;
+  color: white;
+  }
+
+  .area-option {
+    display: flex;
+    width: auto;
+    /* flex-direction: column; 縦に並べる */
+    /* display: inline-flex; */
+    justify-content: center;
+    /* align-items: center; */
+    padding: 10px;
+   /* border: 2px solid #007BFF;  ボーダーの色 */
+    /* border-radius: 10px; 角丸設定 */
+    /* background-color: #f9f9f9; 背景色 */
+}
+
+.area-option label {
+    margin-left: 8px; /* チェックボックスとラベルの間のスペース */
+    font-size: 14px;
+    color: #333;
+}
+
+.area-option input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+}
+
 
 /*Entityの詳細表示ページのLoading 画像用
 （https://www.benricho.org/loading_images/withCSS_04/02.html より） */
-.flower-spinner,  .flower-spinner * {
-    box-sizing: border-box;
-  }
+.flower-spinner,
+.flower-spinner * {
+  box-sizing: border-box;
+}
 
-  .flower-spinner {
-    height: 70px;
-    width: 70px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-  }
+.flower-spinner {
+  height: 70px;
+  width: 70px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
 
-  .flower-spinner .dots-container {
-    height: calc(70px / 7);
-    width: calc(70px / 7);
-  }
+.flower-spinner .dots-container {
+  height: calc(70px / 7);
+  width: calc(70px / 7);
+}
 
-  .flower-spinner .smaller-dot {
-    background: orange;
-    height: 100%;
-    width: 100%;
-    border-radius: 50%;
-    animation: flower-spinner-smaller-dot-animation 2.5s 0s infinite both;
+.flower-spinner .smaller-dot {
+  background: orange;
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  animation: flower-spinner-smaller-dot-animation 2.5s 0s infinite both;
 
-  }
+}
 
-  .flower-spinner .bigger-dot {
-    background: #ff1d5e;
-    height: 100%;
-    width: 100%;
-    padding: 10%;
-    border-radius: 50%;
-    animation: flower-spinner-bigger-dot-animation 2.5s 0s infinite both;
-  }
+.flower-spinner .bigger-dot {
+  background: #ff1d5e;
+  height: 100%;
+  width: 100%;
+  padding: 10%;
+  border-radius: 50%;
+  animation: flower-spinner-bigger-dot-animation 2.5s 0s infinite both;
+}
 
-  @keyframes flower-spinner-bigger-dot-animation {
-    0%, 100% {
-      box-shadow: rgb(255, 29, 94) 0px 0px 0px,
+@keyframes flower-spinner-bigger-dot-animation {
+
+  0%,
+  100% {
+    box-shadow: rgb(255, 29, 94) 0px 0px 0px,
       rgb(255, 29, 94) 0px 0px 0px,
       rgb(255, 29, 94) 0px 0px 0px,
       rgb(255, 29, 94) 0px 0px 0px,
@@ -266,14 +367,15 @@ table {
       rgb(255, 29, 94) 0px 0px 0px,
       rgb(255, 29, 94) 0px 0px 0px,
       rgb(255, 29, 94) 0px 0px 0px;
-    }
+  }
 
-    50% {
-      transform: rotate(180deg);
-    }
+  50% {
+    transform: rotate(180deg);
+  }
 
-    25%, 75% {
-      box-shadow: rgb(255, 29, 94) 26px 0px 0px,
+  25%,
+  75% {
+    box-shadow: rgb(255, 29, 94) 26px 0px 0px,
       rgb(255, 29, 94) -26px 0px 0px,
       rgb(255, 29, 94) 0px 26px 0px,
       rgb(255, 29, 94) 0px -26px 0px,
@@ -281,24 +383,11 @@ table {
       rgb(255, 29, 94) 19px 19px 0px,
       rgb(255, 29, 94) -19px -19px 0px,
       rgb(255, 29, 94) -19px 19px 0px;
-    }
-
-    100% {
-      transform: rotate(360deg);
-      box-shadow: rgb(255, 29, 94) 0px 0px 0px,
-      rgb(255, 29, 94) 0px 0px 0px,
-      rgb(255, 29, 94) 0px 0px 0px,
-      rgb(255, 29, 94) 0px 0px 0px,
-      rgb(255, 29, 94) 0px 0px 0px,
-      rgb(255, 29, 94) 0px 0px 0px,
-      rgb(255, 29, 94) 0px 0px 0px,
-      rgb(255, 29, 94) 0px 0px 0px;
-    }
   }
 
-  @keyframes flower-spinner-smaller-dot-animation {
-    0%, 100% {
-      box-shadow: rgb(255, 29, 94) 0px 0px 0px,
+  100% {
+    transform: rotate(360deg);
+    box-shadow: rgb(255, 29, 94) 0px 0px 0px,
       rgb(255, 29, 94) 0px 0px 0px,
       rgb(255, 29, 94) 0px 0px 0px,
       rgb(255, 29, 94) 0px 0px 0px,
@@ -306,10 +395,26 @@ table {
       rgb(255, 29, 94) 0px 0px 0px,
       rgb(255, 29, 94) 0px 0px 0px,
       rgb(255, 29, 94) 0px 0px 0px;
-    }
+  }
+}
 
-    25%, 75% {
-      box-shadow: rgb(255, 29, 94) 14px 0px 0px,
+@keyframes flower-spinner-smaller-dot-animation {
+
+  0%,
+  100% {
+    box-shadow: rgb(255, 29, 94) 0px 0px 0px,
+      rgb(255, 29, 94) 0px 0px 0px,
+      rgb(255, 29, 94) 0px 0px 0px,
+      rgb(255, 29, 94) 0px 0px 0px,
+      rgb(255, 29, 94) 0px 0px 0px,
+      rgb(255, 29, 94) 0px 0px 0px,
+      rgb(255, 29, 94) 0px 0px 0px,
+      rgb(255, 29, 94) 0px 0px 0px;
+  }
+
+  25%,
+  75% {
+    box-shadow: rgb(255, 29, 94) 14px 0px 0px,
       rgb(255, 29, 94) -14px 0px 0px,
       rgb(255, 29, 94) 0px 14px 0px,
       rgb(255, 29, 94) 0px -14px 0px,
@@ -317,10 +422,10 @@ table {
       rgb(255, 29, 94) 10px 10px 0px,
       rgb(255, 29, 94) -10px -10px 0px,
       rgb(255, 29, 94) -10px 10px 0px;
-    }
+  }
 
-    100% {
-      box-shadow: rgb(255, 29, 94) 0px 0px 0px,
+  100% {
+    box-shadow: rgb(255, 29, 94) 0px 0px 0px,
       rgb(255, 29, 94) 0px 0px 0px,
       rgb(255, 29, 94) 0px 0px 0px,
       rgb(255, 29, 94) 0px 0px 0px,
@@ -328,5 +433,5 @@ table {
       rgb(255, 29, 94) 0px 0px 0px,
       rgb(255, 29, 94) 0px 0px 0px,
       rgb(255, 29, 94) 0px 0px 0px;
-    }
   }
+}

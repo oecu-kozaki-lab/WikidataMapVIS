@@ -45,11 +45,12 @@
     <!-- 検索条件設定の領域 -->
     <div id="menu" class="container">
         <div style="margin-top:4px;">
-            <p>Wikidataに登録されている位置情報をもとに<b>「いろんな分類のMAP」</b>を作成します．<br>
+            <!-- <div style="display: flex; justify-content: center;"> -->
+            <p style="margin:0px; text-align: center;" >Wikidataに登録されている位置情報をもとに<b>「いろんな分類のMAP」</b>を作成します．<br>
                 →作成例）「<a href="https://w.wiki/BXg9" target="_blank">一の宮マップ</a>」
                 「<a href="https://w.wiki/BXgq" target="_blank">世界の国際空港</a>」
             </p>
-
+        <!-- </div> -->
             <!-- 生成したMAPリスト表示用の領域 -->
             <div id="map-list_box" style=" display: none;  ">
                 <h3>作成したMAP</h3>
@@ -75,6 +76,11 @@
                 <label><input type="radio" id="LabelForward" name="labelType" value="forward">前方一致</label>
                 <label><input type="radio" id="LabelAmbi" name="labelType" value="ambi">あいまい検索</label>
                 <br>
+                
+            </div>
+            <div class="area-option">
+                <!-- <label>MAPの表示エリア</label><br> -->
+                <!-- <input type="checkbox" id="onlyJP" checked>生成するMAPを「日本国内」に限定する</input> -->
                 <input type="checkbox" id="onlyJP" checked>生成するMAPを「日本国内」に限定する</input>
             </div>
         </div>
