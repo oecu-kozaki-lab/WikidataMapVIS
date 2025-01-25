@@ -13,7 +13,7 @@
 
     <!-- OGPタグ -->
     <meta property="og:title" content="WD巡礼マップ - Wikidataによる巡礼ルート作成">
-    <meta property="og:description" content="WD巡礼マップはWikidataを利用して巡礼ルートを作成するためのツールです。">
+    <meta property="og:description" content="WD巡礼マップは，Wikidataの位置情報データを利用して様々なマップを数ステップの簡単な操作で作成・公開できるサービスです．">
     <meta property="og:url" content="https://wd-map.hozo.jp/">
     <meta property="og:image" content="https://wd-map.hozo.jp/image/WD-map-OGP.png"> <!-- ロゴ画像のURL -->
     <meta property="og:type" content="website">
@@ -23,7 +23,7 @@
     <!-- Twitterカード（X対応） -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="WD巡礼マップ - Wikidataによる巡礼ルート作成">
-    <meta name="twitter:description" content="WD巡礼マップはWikidataを利用して巡礼ルートを作成するためのツールです。">
+    <meta name="twitter:description" content="WD巡礼マップは，Wikidataの位置情報データを利用して様々なマップを数ステップの簡単な操作で作成・公開できるサービスです．">
     <meta name="twitter:image" content="https://wd-map.hozo.jp/image/WD-map-OGP.png"> <!-- ロゴ画像のURL -->
 
 
@@ -38,7 +38,7 @@
 
 <body>
     <header id="head" class="container">
-        <img src="image/WD-map.png" alt="WD-map ロゴ" class="logo">
+        <a href="index.html"><img src="image/WD-map.png" alt="WD-map ロゴ" class="logo"></a>
         <div class="text-container">
             <div class="main-title">WD巡礼マップ</div>
             <div class="sub-title">Wikidataによる巡礼ルート作成</div>
@@ -50,9 +50,9 @@
     <div id="menu" class="container">
         <div style="margin-top:4px;">
             <!-- <div style="display: flex; justify-content: center;"> -->
-            <p style="margin:0px; text-align: center;">Wikidataに登録されている位置情報をもとに<b>「いろんな分類のMAP」</b>を作成します．<br>
+            <p style="margin:0px; text-align: center;">Wikidataに登録されている位置情報をもとに<br><b>「様々なMAP」</b>を数ステップの簡単な操作で作成・公開できるサービスです．<br>
                 →作成例）「<a href="https://w.wiki/BXg9" target="_blank">一の宮マップ</a>」
-                「<a href="https://w.wiki/BXgq" target="_blank">世界の国際空港</a>」
+                「<a href="https://w.wiki/BXgq" target="_blank">世界の国際空港</a>」，<a href="map-ex.html" target="_blank">その他...</a>
             </p>
             <!-- </div> -->
             <!-- 生成したMAPリスト表示用の領域 -->
@@ -64,14 +64,14 @@
                     <br>
                 </div>
                 <div style=" display: flex; justify-content: center;">
-                    <button class="button-X" onclick="margeMAP()">選択したMAPの合成</button>
+                    <button onclick="margeMAP()">選択したMAPの合成</button>
                     &nbsp;&nbsp;
                     <button onclick="getMapURL()">QRコードの生成</button>
                 </div>
             </div>
 
             <h3>MAPの作成</h3>
-            下記の入力欄にMAPで表示したいデータの<b>「分類」</b>(空港，大学，など)，または，<b>「具体例」</b>（出雲大社，関西国際空港，など）を入力して検索してください．<br>
+            下記の入力欄にMAPで表示したいデータの<b>「分類」</b>(神社，空港，大学，など)または<b>「データ例」</b>（出雲大社，関西国際空港，大阪電気通信大学，など）を入力して検索してください．<br>
             <div style="text-align: center;">
                 <input id="INPUT" type="text" style="font-size: 1em; padding: 5px 5px;" value="神社" autocomplete="off"
                     size="20" />
@@ -84,10 +84,10 @@
                 <br>
 
             </div>
-            
+
             <div class="list-container">
                 <b style="margin-top: 0.5em; display: flex; justify-content: center;flex-wrap: wrap; ">MAP生成のエリア</b>
-                    <div style=" display: flex; justify-content: center;flex-wrap: wrap; ">
+                <div style=" display: flex; justify-content: center;flex-wrap: wrap; ">
                     <label>
                         <input type="radio" name="area-select" id="JapanMap" value="JapanMap" checked>
                         日本に限定
@@ -102,7 +102,7 @@
                     </label>
                 </div>
             </div>
-            
+
             <div style=" display: flex; justify-content: center;">
 
                 <div id="areaSelect" class="form-container" style="display: none;">
@@ -131,7 +131,7 @@
                             <option value="Q23774089">北海道地方</option>
                             <option value="Q129465">東北地方</option>
                             <option value="Q132480">関東地方</option>
-                            <option value="Q381025">北陸地方</option>                            
+                            <option value="Q381025">北陸地方</option>
                             <option value="Q398989">東海地方</option>
                             <option value="Q164256">近畿地方</option>
                             <option value="Q127864">中国地方</option>
@@ -154,10 +154,11 @@
         <!-- 結果表示用の領域 -->
         <div id="result_box" style=" display: none;">
 
-            <div id="result_div"  class="table-container" style="flex: 1;"></div>
+            <div id="result_div" class="table-container" style="flex: 1;"></div>
         </div>
         <hr>
         <p style="text-align: center;">
+            [<a href="map-ex.html" target="_blank">MAPの例</a>]            
             [<a href="doc/WikidataMapVIS_HowTo.pdf" target="_blank">使い方</a>]
             [<a href="https://qiita.com/koujikozaki/items/197db0dfc555d57338c6" target="_blank">技術解説</a>]
             [<a href="https://github.com/oecu-kozaki-lab/WikidataMapVIS" target="_blank">ソースコード</a>]

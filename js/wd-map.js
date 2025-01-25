@@ -268,8 +268,8 @@ function getListQuery(classID, kind) {
 
 function margeMAP() {
     const checkboxes = document.querySelectorAll('#map-list input[type="checkbox"]:checked');
-    if (checkboxes.length <= 1) {
-        alert(`合成するMAPを 2 つ以上選択してください`);
+    if (checkboxes.length < 1) {
+        alert(`MAPを 1 つ以上選択してください`);
         return;
     }
 

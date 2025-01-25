@@ -270,7 +270,7 @@ button {
 
 .button-MAP {
   /* text-decoration: none; */
-  font-size: 14px;
+  font-size:  1em;
   padding: 5px;
   border-radius: 5px;
   display: inline-block;
