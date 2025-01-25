@@ -86,8 +86,9 @@
             </div>
             
             <div class="list-container">
-                <div style=" display: flex; justify-content: center;">
-                    <label><b>MAP生成のエリア</b>：
+                <b style="margin-top: 0.5em; display: flex; justify-content: center;flex-wrap: wrap; ">MAP生成のエリア</b>
+                    <div style=" display: flex; justify-content: center;flex-wrap: wrap; ">
+                    <label>
                         <input type="radio" name="area-select" id="JapanMap" value="JapanMap" checked>
                         日本に限定
                     </label>
@@ -101,6 +102,7 @@
                     </label>
                 </div>
             </div>
+            
             <div style=" display: flex; justify-content: center;">
 
                 <div id="areaSelect" class="form-container" style="display: none;">
@@ -152,13 +154,13 @@
         <!-- 結果表示用の領域 -->
         <div id="result_box" style=" display: none;">
 
-            <div id="result_div" class="container" style="flex: 1;"></div>
+            <div id="result_div"  class="table-container" style="flex: 1;"></div>
         </div>
         <hr>
         <p style="text-align: center;">
-            【<a href="doc/WikidataMapVIS_HowTo.pdf" target="_blank">使い方</a>】
-            【<a href="https://qiita.com/koujikozaki/items/197db0dfc555d57338c6" target="_blank">技術解説</a>】
-            【<a href="https://github.com/oecu-kozaki-lab/WikidataMapVIS" target="_blank">ソースコード</a>】
+            [<a href="doc/WikidataMapVIS_HowTo.pdf" target="_blank">使い方</a>]
+            [<a href="https://qiita.com/koujikozaki/items/197db0dfc555d57338c6" target="_blank">技術解説</a>]
+            [<a href="https://github.com/oecu-kozaki-lab/WikidataMapVIS" target="_blank">ソースコード</a>]
         </p>
 
         <!-- 下記の「クエリの表示・非表示」ボタンは，必要がなければコメントアウトしてもよい  -->

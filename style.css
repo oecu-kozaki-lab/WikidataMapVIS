@@ -101,6 +101,11 @@ table {
   /* 水平方向の中央寄せ */
 }
 
+.table-container {
+  overflow-x: auto; /* 横スクロールを有効化 */
+  white-space: nowrap; /* テーブルの折り返しを防止 */
+}
+
 table th,
 table td {
   border: 1px solid rgba(0, 0, 0, .1);
@@ -347,6 +352,10 @@ button {
   flex-direction: column; /* 縦に並べる */
   gap: 20px; /* 各項目の間にスペース */
   max-width: 400px; /* レイアウトの幅を制限 */
+  border: 1px solid #ccc; /* ボーダーを追加 */
+  padding: 20px; /* 内側にスペースを確保 */
+  border-radius: 8px; /* ボーダーの角を丸める */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 軽い影を追加 */
 }
 select {
   width: 100%;
