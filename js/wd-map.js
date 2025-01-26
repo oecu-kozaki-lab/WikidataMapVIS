@@ -588,10 +588,10 @@ function generateSNSLink(sns) {
         snsLink = `https://twitter.com/intent/tweet?url=https://wd-map.hozo.jp/${mapURL}&text=${encodedText}`;
     }
     else if (sns == "FB") {
-        snsLink = `https://www.facebook.com/sharer/sharer.php?u=https://wd-map.hozo.jp/${mapURL} ${encodedText}`;
+        snsLink = `https://www.facebook.com/sharer/sharer.php?u=https://wd-map.hozo.jp/${mapURL}`;
     }
     else if (sns == "LINE") {
-        snsLink = `https://social-plugins.line.me/lineit/share?url=https://wd-map.hozo.jp/${mapURL} ${encodedText}`;
+        snsLink = `https://social-plugins.line.me/lineit/share?url=https://wd-map.hozo.jp/${mapURL}`;
     }
 
     console.log(sns + "-LINK:" + snsLink);
