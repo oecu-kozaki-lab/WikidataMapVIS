@@ -1,8 +1,6 @@
-
-function getUrlParam(param) {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(param); // 指定したパラメータの値を返す
-}
+//分類の関係を変換するための対応データ
+const kinds = { "分類": "0", "含む": "1", "一部": "2", "ついて": "3", };
+const kind2str = ["分類", "含む", "一部", "ついて"];
 
 window.addEventListener('load', async () => {
     if (getUrlParam('setting') != null) {
@@ -10,24 +8,16 @@ window.addEventListener('load', async () => {
         document.getElementById('dis_b').style.display = 'block';
     };
 
-    if (getUrlParam('map') != null) {
-        setMapList(getUrlParam('map'));
-        // const maps = getUrlParam('map').split("][");
-        // for (const map of maps) {
-        //     const maplist = map.replace("[",'').replace("]",'').split('/');
-        //     if(maplist.length==3){
-        //         document.getElementById('map-list_box').style.display = 'block';
-        //         addMapList(maplist[0],maplist[1],maplist[2]);
-        //         //alert("MAP:"+maplist[0]+maplist[1]+maplist[2]);
-        //     }
-        //     else{
-        //         console.log(map+'の形式エラー');
-        //     }
-        // }
+    if (getUrlParam('maps') != null) {
+        // setMapList(getUrlParam('map'));
+        setMapList(getUrlParam('maps'));
     }
 
     //エリア選択の設定
     setAreaLists();
+    if (getUrlParam('area') != null) {
+       setAreaOption(getUrlParam('area'));
+    }
 
     const sendButton = document.getElementById('send');
     const checkJp = document.getElementById("onlyJP");
@@ -42,6 +32,19 @@ window.addEventListener('load', async () => {
     // }, false);
 
 }, false);
+
+
+function getUrlParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param); // 指定したパラメータの値を返す
+}
+
+function editMAP() {
+    // 現在のURLのパラメータを取得
+    const params = window.location.search; // "?key=value&key2=value2" のような形式
+    // index.html にパラメータを引き継いで遷移
+    window.location.href = `index.html${params}`;
+}
 
 //検索に用いるSPARQLクエリを生成し，実行する
 async function makeQuery() {
@@ -153,16 +156,6 @@ async function showResult(resultData, resultArea) {
     resultArea.innerHTML = mesText + '</table>';
 }
 
-function handleCheckboxChange(checkbox) {
-    const cls = checkbox.getAttribute("cls");
-    const kind = checkbox.getAttribute("kind");
-    if (checkbox.checked) {
-        alert(`You checked: ${checkbox.value}\ncls: ${cls}, kind: ${kind}`);
-    } else {
-        alert(`You unchecked: ${checkbox.value}\ncls: ${cls}, kind: ${kind}`);
-    }
-}
-
 async function showMAP(className, classID, kind) {
     document.getElementById('map-list_box').style.display = 'block';
     console.log(className + '[' + classID + '] - ' + kind);
@@ -179,25 +172,35 @@ async function showMAP(className, classID, kind) {
 function addMapList(className, classID, kind) {
     console.log(`addMapList:${className}/${classID}/${kind}`);
     const listQuery = getListQuery(classID, kind);
-    mapURL = "https://query.wikidata.org/embed.html#"
-        + encodeURIComponent(getMapQuery(listQuery, false));
+    // mapURL = "https://query.wikidata.org/embed.html#"
+    //     + encodeURIComponent(getMapQuery(listQuery, false));
+
+    const mapURL = `<a href="#" onclick="showMAP('${className}','${classID}','${kind}')" target="_blank" class="button-link">MAP表示</a>`;
 
     const list = document.getElementById("map-list");
     const newItem = document.createElement("li");
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
-    checkbox.value = `${className}/${classID}/${kind}`;
+    checkbox.value = `${classID}/${kinds[kind]}`;
+    //checkbox.value = `${className}/${classID}/${kind}`;
+    checkbox.setAttribute("name", className);
     checkbox.setAttribute("cls", classID);
     checkbox.setAttribute("kind", kind);
-    //checkbox.onclick = function () { handleCheckboxChange(checkbox); };
+
+    // const value2 = `${classID}/${kinds[kind]}`;
+    // checkbox.setAttribute("value2", value2);
+
 
     const label = document.createElement("label");
-    label.innerHTML = ` <b>${className}</b><span style="font-size: smaller;">[${getHtmlData("http://www.wikidata.org/entity/" + classID)}]</span>:${kind}  <a href="${mapURL}" target="_blank" class="button-link">MAP表示</a>  <a href="#" onclick="removeItem(event)" class="button-del">×</a>`;
+    label.innerHTML = ` <b>${className}</b><span style="font-size: smaller;">[${getHtmlData("http://www.wikidata.org/entity/" + classID)}]</span>:${kind}  ${mapURL}  <a href="#" onclick="removeItem(event)" class="button-del">×</a>`;
+    // label.innerHTML = ` <b>${className}</b><span style="font-size: smaller;">[${getHtmlData("http://www.wikidata.org/entity/" + classID)}]</span>:${kind}  <a href="${mapURL}" target="_blank" class="button-link">MAP表示</a>  <a href="#" onclick="removeItem(event)" class="button-del">×</a>`;
     // const label =  `<label>${className} ${getHtmlData("wd:"+classID)}- ${kind}</label>`;
 
     newItem.appendChild(checkbox);
     newItem.appendChild(label);
     list.appendChild(newItem);
+
+    return checkbox;
 }
 
 function getMapQuery(listQuery, useLayer) {
@@ -205,10 +208,10 @@ function getMapQuery(listQuery, useLayer) {
     if (document.getElementById('JapanMap').checked) {
         console.log("Area==>Japan");
         //mapQuery = mapQuery.replace("?item wdt:P17 wd:Q17.", "");
-    }else if (document.getElementById('WorldMap').checked) {
+    } else if (document.getElementById('WorldMap').checked) {
         mapQuery = mapQuery.replace("?item wdt:P17 wd:Q17.", "");
         console.log("Area==>Wolrd");
-    }else if (document.getElementById('OtherMap').checked) {
+    } else if (document.getElementById('OtherMap').checked) {
         const area = getSelectedArea();
         //"?item wdt:P131|wdt:P131/wdt:P131|wdt:P131/wdt:P131/wdt:P131 wd:Q120730.";
         mapQuery = mapQuery.replace("?item wdt:P17 wd:Q17.", area);
@@ -222,6 +225,107 @@ function getMapQuery(listQuery, useLayer) {
 
     return mapQuery.replace("#GET-LIST#", listQuery);
 }
+
+//MAP生成のエリアの選択状況を取得する（URLパラメータ用）
+function getAreaOption() {
+    let areaOption = "";
+
+    //全体設定 日本に限定=J, 世界地図=W, 詳細設定=O
+    if (document.getElementById('JapanMap').checked) {
+        areaOption += "J/";
+    } else if (document.getElementById('WorldMap').checked) {
+        areaOption += "W/";
+    } else if (document.getElementById('OtherMap').checked) {
+        areaOption += "O/";
+    }
+
+    //詳細設定 国=C, 日本の地域=JA, 都道府県=P
+    const countriesSelect = document.getElementById('countries');
+    const prefecturesSelect = document.getElementById('prefectures');
+    const JpAreaSelect = document.getElementById('JpArea');
+    // アクティブなリストを判定
+    if (!countriesSelect.disabled) {
+        areaOption += "C/";
+    }
+    else if (!JpAreaSelect.disabled) {
+        areaOption += "JA/";
+    }
+    else if (!prefecturesSelect.disabled) {
+        areaOption += "P/";
+    }
+
+    //各リストの選択状況を追加
+    areaOption += countriesSelect.options[countriesSelect.selectedIndex].value;
+    areaOption += '/' + prefecturesSelect.options[prefecturesSelect.selectedIndex].value;
+    areaOption += '/' + JpAreaSelect.options[JpAreaSelect.selectedIndex].value;
+
+    console.log("areaOption=" + areaOption);
+
+    return areaOption;
+}
+
+//MAP生成のエリアの選択状況を設定する（URLパラメータ用）
+// ex) area=J/C/Q17/Q122723/Q23774089
+function setAreaOption(areaOption) {
+
+    const areas = areaOption.split("/");
+    if (areas.length < 5) {
+        console.log("areaOptionの形式エラー");
+        return;
+    }
+
+    //全体設定 日本に限定=J, 世界地図=W, 詳細設定=O
+    if (areas[0] == "J") {
+        document.getElementById('JapanMap').checked = true;
+        document.getElementById('WorldMap').checked = false;
+        document.getElementById('OtherMap').checked = false;
+    }
+    else if (areas[0] == "W") {
+        document.getElementById('JapanMap').checked = false;
+        document.getElementById('WorldMap').checked = true;
+        document.getElementById('OtherMap').checked = false;
+    }
+    else if (areas[0] == "O") {
+        document.getElementById('JapanMap').checked = false;
+        document.getElementById('WorldMap').checked = false;
+        document.getElementById('OtherMap').checked = true;
+        document.getElementById('areaSelect').style.display = 'block';
+    }
+
+    //詳細設定 国=C, 日本の地域=JA, 都道府県=P
+    const countriesSelect = document.getElementById('countries');
+    const prefecturesSelect = document.getElementById('prefectures');
+    const JpAreaSelect = document.getElementById('JpArea');
+
+    countriesSelect.disabled = false;  // disabledを一時的に解除
+    countriesSelect.value = areas[2];
+    prefecturesSelect.disabled = false;  // disabledを一時的に解除
+    prefecturesSelect.value = areas[3];
+    JpAreaSelect.disabled = false;  // disabledを一時的に解除
+    JpAreaSelect.value = areas[4];
+
+    // アクティブなリストの設定　→　あとは自動で状態が変わるはず
+    if (areas[1] == "C") {
+        document.getElementById('enableCountries').checked = true;
+        countriesSelect.disabled = false;
+        JpAreaSelect.disabled = true;
+        prefecturesSelect.disabled = true;
+    }
+    else if (areas[1] == "JA") {
+        document.getElementById('enableJpArea').checked = true;
+        countriesSelect.disabled = true;
+        JpAreaSelect.disabled = false;
+        prefecturesSelect.disabled = true;
+    }
+    else if (areas[1] == "P") {
+        document.getElementById('enablePrefectures').checked = true;
+        countriesSelect.disabled = true;
+        JpAreaSelect.disabled = true;
+        prefecturesSelect.disabled = false;
+    }
+
+}
+
 
 async function askQuery(classID, kind) {
     let endpoint = document.getElementById('ENDPOINT').value;
@@ -239,6 +343,29 @@ async function askQuery(classID, kind) {
     const resultData = await sendSPARQLQuery(endpoint, askquery);
 
     return resultData.boolean;// JSON.stringify(resultData);
+}
+
+//QIDの一覧からラベルを得る
+async function labelQuery(classIDs) {
+    let endpoint = document.getElementById('ENDPOINT').value;
+    if (endpoint == null) {
+        endpoint = "https://query.wikidata.org/sparql";
+    }
+    let ids = "";
+    for (let i = 0; i < classIDs.length; i++) {
+        ids += " wd:" + classIDs[i];
+    }
+    let labelquery = `SELECT ?item ?itemLabel WHERE {
+  VALUES ?item {${ids}}
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "ja,en". }
+    }`;
+    console.log(labelquery);
+
+    const resultData = await sendSPARQLQuery(endpoint, labelquery);
+
+    const data = resultData.results.bindings;
+    // console.log(JSON.stringify(data));
+    return data;// JSON.stringify(resultData);
 }
 
 function getListQuery(classID, kind) {
@@ -266,7 +393,7 @@ function getListQuery(classID, kind) {
     return listQuery;
 }
 
-function margeMAP() {
+function getMAPurl() {
     const checkboxes = document.querySelectorAll('#map-list input[type="checkbox"]:checked');
     if (checkboxes.length < 1) {
         alert(`MAPを 1 つ以上選択してください`);
@@ -288,6 +415,11 @@ function margeMAP() {
     mapURL = "https://query.wikidata.org/embed.html#"
         + encodeURIComponent(getMapQuery(listQuery, true));
 
+    return mapURL;
+}
+
+function margeMAP() {
+    const mapURL = getMAPurl() ;
     window.open(mapURL, '_blank');
 }
 
@@ -295,20 +427,179 @@ function getMapURL() {
     const checkboxes = document.querySelectorAll('#map-list input[type="checkbox"]');
 
     let maps = "";
+    //let maps2 = "";
     for (let i = 0; i < checkboxes.length; i++) {
-        maps += '[' + checkboxes[i].value + ']';
+        let ck = 0;
+        if (checkboxes[i].checked) { ck = 1; }
+        maps += '[' + checkboxes[i].value + '/' + ck + ']';
+        //maps2 += '[' + checkboxes[i].getAttribute("value2") + ']';
     }
+
+    console.log(maps);
 
     // let mapURL = "https://wd-map.hozo.jp/index.html?map="+encodeURIComponent(maps);
 
     //'https://wd-map.hozo.jp/index.html?map='+encodeURIComponent('[空港/Q1248784/分類][空港2/Q1248784/分類]'
+    const areaOption = getAreaOption();
 
-    window.open('qr.html?map-qr=' + maps, '_blank');
+    window.open('qr.html?maps=' + maps + '&area=' + areaOption, '_blank');
+    //window.open('qr.html?map-qr=' + maps+'&qr2=' + maps2, '_blank');
     console.log(maps);
     // return mapURL;
 }
 
-function setMapList(mapsurl) {
+async function setMapList(mapsurl) {
+    const maps = mapsurl.split("][");
+    let ids = [maps.length];
+    for (let i = 0; i < maps.length; i++) {
+        const maplist = maps[i].replace("[", '').replace("]", '').split('/');
+        console.log("maplist[0]" + maplist[0]);
+        if (maplist.length == 3) {
+            ids[i] = maplist[0];
+        }
+        else {
+            console.log(maps[i] + 'の形式エラー');
+        }
+    }
+    console.log(ids);
+    const classLabels = await labelQuery(ids);
+
+    console.log(JSON.stringify(classLabels));
+    let i = 0
+    for (const map of maps) {
+        const maplist = map.replace("[", '').replace("]", '').split('/');
+        if (maplist.length == 3) {
+            if (classLabels[i]["item"].value.endsWith(maplist[0])) {
+                document.getElementById('map-list_box').style.display = 'block';
+                const checkbox = addMapList(classLabels[i]["itemLabel"].value, maplist[0], kind2str[maplist[1]]);
+                if (maplist[2] == 1) {
+                    checkbox.checked = true;
+                }
+            }
+            else {
+                console.log(maplist[0] + 'のID不一致エラー');
+            }
+            //alert("MAP:"+maplist[0]+maplist[1]+maplist[2]);
+        }
+        else {
+            console.log(map + 'の形式エラー');
+        }
+        i++;
+    }
+
+    if (document.getElementById("shareButtons") != null) {
+
+        // X (Twitter) シェアボタン がURLのエンコードが上手く認識されず保留
+        // const encodedurl = 'https://wd-map.hozo.jp/qr.html?map-qr='+encodeURIComponent(mapsurl);
+        // console.log(encodedurl);
+
+        // // URLをエンコード
+        // const encodedUrl = encodeURIComponent('https://wd-map.hozo.jp/qr.html?map-qr='+mapsurl.replaceAll("[","").replaceAll("]",""));
+        const encodedText = encodeURIComponent('WD巡礼マップ - Wikidataによる巡礼ルート作成');
+        // <!-- X (Twitter) シェアボタン -->
+        // <a href="https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}"
+        //   target="_blank" class="button-X"> X で共有
+        // </a>
+
+        let shareButtons = `
+          <!-- X (Twitter) シェアボタン -->
+          <a href="https://twitter.com/intent/tweet?url=https://wd-map.hozo.jp/qr.html?maps=${mapsurl}&text=${encodedText}" target="_blank" class="button-X"> X で共有
+          </a>
+          <!-- Facebook シェアボタン -->
+          <a href="https://www.facebook.com/sharer/sharer.php?u=https://wd-map.hozo.jp/qr.html?maps=${mapsurl}" target="_blank" class="button-FB">Facebook</a>
+
+          <!-- LINE シェアボタン -->
+          <a href="https://social-plugins.line.me/lineit/share?url=https://wd-map.hozo.jp/qr.html?maps=${mapsurl}" target="_blank" class="button-LINE">LINEで共有</a>
+
+          <a href="javascript:void(0);" onclick="generateHTMLLink()" class="button-HTML">HTMLリンク</a>`;
+
+        document.getElementById("shareButtons").innerHTML = shareButtons;
+    }
+}
+
+function generateHTMLLink() {
+    // 現在のページのURLを取得
+    const currentURL = 'https://wd-map.hozo.jp/qr.html'+ window.location.search;
+
+    const checkboxes = document.querySelectorAll('#map-list input[type="checkbox"]:checked');
+    if (checkboxes.length < 1) {
+        alert(`MAPを 1 つ以上選択してください`);
+        return;
+    }
+
+    const mapURL = getMAPurl();
+
+    let mapName = "";
+    for (let i = 0; i < checkboxes.length; i++) {
+        if(i>0){
+            mapName += " + ";
+        }
+        mapName += checkboxes[i].getAttribute("name");
+    }
+
+
+    // HTMLコードを生成
+    const htmlCode = `<b style="font-size: larger;">${mapName}</b> <a href="${currentURL}" target="_blank" class="button-map">MAP設定</a> <a href="${mapURL}" target="_blank"  class="button-map-show">MAP表示</a>`;
+
+    // ポップアップ用のウィンドウを生成
+    const popup = window.open("", "popup", "width=600,height=400");
+
+    // テキストエリアとボタンを作成して中央配置
+    if (popup) {
+        popup.document.write(`
+            <!DOCTYPE html>
+            <html lang="ja">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>WD巡礼マップ：作成したMAPのリンク</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        margin: 0;
+                        padding: 10px;
+                        height: 100vh;
+                        box-sizing: border-box;
+                    }
+                    textarea {
+                        width: 100%;
+                        max-width: 95%;
+                        height: 100px;
+                        margin-bottom: 20px;
+                        resize: none;
+                    }
+                    button {
+                        padding: 10px 20px;
+                        font-size: 16px;
+                        border: none;
+                        background-color: #007BFF;
+                        color: white;
+                        border-radius: 5px;
+                        cursor: pointer;
+                    }
+                    button:hover {
+                        background-color: #0056b3;
+                    }
+                </style>
+            </head>
+            <body>
+                <h3>作成したMAPをリンクとして使用するHTMLコードです．</h3>
+                <textarea readonly>${htmlCode}</textarea>
+                <button onclick="window.close()">閉じる</button>
+            </body>
+            </html>
+        `);
+        popup.document.close();
+    } else {
+        alert("ポップアップがブロックされました。設定を確認してください。");
+    }
+}
+
+async function setMapListOLD(mapsurl) {
     const maps = mapsurl.split("][");
     for (const map of maps) {
         const maplist = map.replace("[", '').replace("]", '').split('/');
@@ -321,27 +612,14 @@ function setMapList(mapsurl) {
             console.log(map + 'の形式エラー');
         }
     }
-
-    // X (Twitter) シェアボタン がURLのエンコードが上手く認識されず保留
-    // const encodedurl = 'https://wd-map.hozo.jp/qr.html?map-qr='+encodeURIComponent(mapsurl);
-    // console.log(encodedurl);
-
-    // // URLをエンコード
-    // const encodedUrl = encodeURIComponent('https://wd-map.hozo.jp/qr.html?map-qr='+mapsurl.replaceAll("[","").replaceAll("]",""));
-    // const encodedText = encodeURIComponent('WD巡礼マップ - Wikidataによる巡礼ルート作成');
-    // <!-- X (Twitter) シェアボタン -->
-    // <a href="https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}"
-    //   target="_blank" class="button-X"> X で共有
-    // </a>
-
     let shareButtons = `
           <!-- Facebook シェアボタン -->
           <a href="https://www.facebook.com/sharer/sharer.php?u=https://wd-map.hozo.jp/qr.html?map-qr=${mapsurl}" target="_blank" class="button-FB">Facebookで共有</a>
 
           <!-- LINE シェアボタン -->
           <a href="https://social-plugins.line.me/lineit/share?url=https://wd-map.hozo.jp/qr.html?map-qr=${mapsurl}" target="_blank" class="button-LINE">LINEで共有</a>`;
-    
-    document.getElementById("shareButtons").innerHTML=shareButtons;
+
+    document.getElementById("shareButtons").innerHTML = shareButtons;
 }
 
 function checkAllMpas() {
@@ -404,7 +682,7 @@ function populatePrefectureList() {
     selectElement.disabled = true; // 都道府県リストを無効化
 }
 
-function setAreaLists(){
+function setAreaLists() {
     // ページ読み込み時に選択リストを生成
     populatePrefectureList();
     // ページ読み込み時に選択リストを生成
@@ -413,17 +691,17 @@ function setAreaLists(){
     // 各リストとラジオボタンを取得
     // const WorldAreaRadio = document.getElementById('enableWorldArea');
     // const WorldAreaSelect = document.getElementById('WorldArea');
-    
+
     const countriesRadio = document.getElementById('enableCountries');
     const countriesSelect = document.getElementById('countries');
-    
+
     const prefecturesRadio = document.getElementById('enablePrefectures');
     const prefecturesSelect = document.getElementById('prefectures');
 
     const JpAreaRadio = document.getElementById('enableJpArea');
     const JpAreaSelect = document.getElementById('JpArea');
 
-    
+
     const areaSelectLists = document.getElementById('areaSelect');
 
     document.getElementById('JapanMap').addEventListener('change', () => {
@@ -483,12 +761,12 @@ function setAreaLists(){
     // });
 }
 
-function getSelectedArea(){
+function getSelectedArea() {
     const countriesSelect = document.getElementById('countries');
     const prefecturesSelect = document.getElementById('prefectures');
     const JpAreaSelect = document.getElementById('JpArea');
     // const WorldAreaSelect = document.getElementById('WorldArea');
- 
+
     let activeList, selectedOption, areaQuery;
 
     // アクティブなリストを判定
@@ -500,20 +778,20 @@ function getSelectedArea(){
         activeList = '日本の地域';
         selectedOption = prefecturesSelect.options[prefecturesSelect.selectedIndex];
         areaQuery = `?item wdt:P131|wdt:P131/wdt:P131|wdt:P131/wdt:P131/wdt:P131 wd:${selectedOption.value}.`
-    } 
-    else if(!JpAreaSelect.disabled){
+    }
+    else if (!JpAreaSelect.disabled) {
         activeList = '都道府県';
         selectedOption = JpAreaSelect.options[JpAreaSelect.selectedIndex];
         areaQuery = `wd:${selectedOption.value} wdt:P150|wdt:P527 ?area .
         ?area wdt:P31 wd:Q50337.
         ?item wdt:P131|wdt:P131/wdt:P131|wdt:P131/wdt:P131/wdt:P131 ?area.`;
     }
-//     else if(!WorldAreaSelect.disabled){
-//         activeList = '世界の地域';
-//         selectedOption = WorldAreaSelect.options[WorldAreaSelect.selectedIndex];
-//         areaQuery = `wd:${selectedOption.value} wdt:P527/wdt:P17|wdt:P527/wdt:P150|wdt:P527/wdt:P527 ?area.
-//   ?area wdt:P297 ?code.`;
-//     }
+    //     else if(!WorldAreaSelect.disabled){
+    //         activeList = '世界の地域';
+    //         selectedOption = WorldAreaSelect.options[WorldAreaSelect.selectedIndex];
+    //         areaQuery = `wd:${selectedOption.value} wdt:P527/wdt:P17|wdt:P527/wdt:P150|wdt:P527/wdt:P527 ?area.
+    //   ?area wdt:P297 ?code.`;
+    //     }
 
     return areaQuery;
     // 選択されたラベルと値を表示

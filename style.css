@@ -230,6 +230,27 @@ iframe {
   /* ホバー時のスムーズな変化 */
 }
 
+.button-map {
+  padding: 1px 3px;
+  background-color: #ff8c00;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.8em;
+  text-align: center;
+}
+
+.button-map-show {
+  padding: 1px 3px;
+  background-color: #007BFF;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.8em;
+  text-align: center;
+}
+
+
 /* ホバー時のスタイル */
 .button-link:hover {
   background-color: #0056b3;
@@ -323,6 +344,17 @@ button {
   color: white;
   }
 
+  .button-HTML {
+    text-decoration: none;
+    font-size: 14px;
+    padding: 5px;
+    border-radius: 5px;
+    display: inline-block;
+    margin: 2px;
+    background-color: #159115;
+    color: white;
+    }
+  
   .area-option {
     display: flex;
     width: auto;
