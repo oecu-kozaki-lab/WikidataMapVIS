@@ -58,9 +58,12 @@ async function makeQuery() {
     let query = document.getElementById('query_area').value;
 
     //入力に応じてSPARQLクエリを書き換える（書き方のサンプル）
-    const textLABEL = document.getElementById('INPUT').value;
+    let textLABEL = document.getElementById('INPUT').value;
     // query = query.replace('#INPUT#',InputText);
 
+    if (textLABEL == "") {
+        textLABEL = "神社";
+    }
     let ids = "";
     let conditions = "";
 
@@ -583,7 +586,7 @@ function generateSNSLink(sns) {
         areaName = "[" + areaName + "]";
     }
     const encodedText = encodeURIComponent(`WD巡礼マップ - ${mapName} ${areaName}\n`);
-        
+
     if (sns == "X") {
         snsLink = `https://twitter.com/intent/tweet?url=https://wd-map.hozo.jp/${mapURL}&text=${encodedText}`;
     }
