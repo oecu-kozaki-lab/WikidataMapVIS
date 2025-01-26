@@ -3,6 +3,9 @@ const kinds = { "分類": "0", "含む": "1", "一部": "2", "ついて": "3", }
 const kind2str = ["分類", "含む", "一部", "ついて"];
 
 window.addEventListener('load', async () => {
+    //エリア選択の設定
+    setAreaLists();
+
     if (getUrlParam('setting') != null) {
         //alert("setting");
         document.getElementById('dis_b').style.display = 'block';
@@ -13,10 +16,8 @@ window.addEventListener('load', async () => {
         setMapList(getUrlParam('maps'));
     }
 
-    //エリア選択の設定
-    setAreaLists();
     if (getUrlParam('area') != null) {
-       setAreaOption(getUrlParam('area'));
+        setAreaOption(getUrlParam('area'));
     }
 
     const sendButton = document.getElementById('send');
@@ -41,9 +42,10 @@ function getUrlParam(param) {
 
 function editMAP() {
     // 現在のURLのパラメータを取得
+    const editURL = getMapQrURL().replace('qr.html','index.html');//
     const params = window.location.search; // "?key=value&key2=value2" のような形式
     // index.html にパラメータを引き継いで遷移
-    window.location.href = `index.html${params}`;
+    window.location.href = editURL;//`index.html${params}`;
 }
 
 //検索に用いるSPARQLクエリを生成し，実行する
@@ -226,6 +228,37 @@ function getMapQuery(listQuery, useLayer) {
     return mapQuery.replace("#GET-LIST#", listQuery);
 }
 
+//現在選択しているエリアのラベルを取得する
+function getSlectedArea() {
+    //全体設定
+    if (document.getElementById('JapanMap').checked) {
+        return "日本";
+    } else if (document.getElementById('WorldMap').checked) {
+        return "世界地図";
+    }
+    //  else if (document.getElementById('OtherMap').checked) {
+    //     //areaOption += "O/";
+    // }
+
+    //詳細設定 国=C, 日本の地域=JA, 都道府県=P
+    const countriesSelect = document.getElementById('countries');
+    const prefecturesSelect = document.getElementById('prefectures');
+    const JpAreaSelect = document.getElementById('JpArea');
+    // アクティブなリストを判定
+    if (!countriesSelect.disabled) {
+        return countriesSelect.options[countriesSelect.selectedIndex].textContent;
+    }
+    else if (!JpAreaSelect.disabled) {
+        return JpAreaSelect.options[JpAreaSelect.selectedIndex].textContent;
+    }
+    else if (!prefecturesSelect.disabled) {
+        return prefecturesSelect.options[prefecturesSelect.selectedIndex].textContent;
+    }
+
+    return "";
+}
+
+
 //MAP生成のエリアの選択状況を取得する（URLパラメータ用）
 function getAreaOption() {
     let areaOption = "";
@@ -393,7 +426,7 @@ function getListQuery(classID, kind) {
     return listQuery;
 }
 
-function getMAPurl() {
+function getMapOpenURL() {
     const checkboxes = document.querySelectorAll('#map-list input[type="checkbox"]:checked');
     if (checkboxes.length < 1) {
         alert(`MAPを 1 つ以上選択してください`);
@@ -419,40 +452,51 @@ function getMAPurl() {
 }
 
 function margeMAP() {
-    const mapURL = getMAPurl() ;
+    const mapURL = getMapOpenURL();
     window.open(mapURL, '_blank');
 }
 
-function getMapURL() {
+function getMapQrURL() {
     const checkboxes = document.querySelectorAll('#map-list input[type="checkbox"]');
 
     let maps = "";
     //let maps2 = "";
     for (let i = 0; i < checkboxes.length; i++) {
+        if (i > 0) { maps += "//"; }
         let ck = 0;
         if (checkboxes[i].checked) { ck = 1; }
-        maps += '[' + checkboxes[i].value + '/' + ck + ']';
-        //maps2 += '[' + checkboxes[i].getAttribute("value2") + ']';
+        maps += checkboxes[i].value + '/' + ck;
+        // maps += '[' + checkboxes[i].value + '/' + ck + ']';
     }
-
     console.log(maps);
-
-    // let mapURL = "https://wd-map.hozo.jp/index.html?map="+encodeURIComponent(maps);
-
-    //'https://wd-map.hozo.jp/index.html?map='+encodeURIComponent('[空港/Q1248784/分類][空港2/Q1248784/分類]'
     const areaOption = getAreaOption();
 
-    window.open('qr.html?maps=' + maps + '&area=' + areaOption, '_blank');
-    //window.open('qr.html?map-qr=' + maps+'&qr2=' + maps2, '_blank');
-    console.log(maps);
-    // return mapURL;
+    mapURL = 'qr.html?maps=' + maps + '/area/' + areaOption;
+    //window.open('qr.html?maps=' + maps + '&area=' + areaOption, '_blank');
+
+    return mapURL;
+}
+
+//MAPのQRページを開く
+function showMapQR() {
+    const mapURL = getMapQrURL();
+    window.open(mapURL, '_blank');
 }
 
 async function setMapList(mapsurl) {
-    const maps = mapsurl.split("][");
+    const maps_area = mapsurl.split("/area/");
+
+    //エリアの処理
+    if (maps_area.length == 2) {
+        setAreaOption(maps_area[1]);
+    }
+
+    const maps = maps_area[0].split("//");
+    //const maps = mapsurl.split("][");
     let ids = [maps.length];
     for (let i = 0; i < maps.length; i++) {
-        const maplist = maps[i].replace("[", '').replace("]", '').split('/');
+        const maplist = maps[i].split('/');
+        //const maplist = maps[i].replace("[", '').replace("]", '').split('/');
         console.log("maplist[0]" + maplist[0]);
         if (maplist.length == 3) {
             ids[i] = maplist[0];
@@ -467,7 +511,8 @@ async function setMapList(mapsurl) {
     console.log(JSON.stringify(classLabels));
     let i = 0
     for (const map of maps) {
-        const maplist = map.replace("[", '').replace("]", '').split('/');
+        const maplist = maps[i].split('/');
+        //const maplist = maps[i].replace("[", '').replace("]", '').split('/');
         if (maplist.length == 3) {
             if (classLabels[i]["item"].value.endsWith(maplist[0])) {
                 document.getElementById('map-list_box').style.display = 'block';
@@ -488,28 +533,15 @@ async function setMapList(mapsurl) {
     }
 
     if (document.getElementById("shareButtons") != null) {
-
-        // X (Twitter) シェアボタン がURLのエンコードが上手く認識されず保留
-        // const encodedurl = 'https://wd-map.hozo.jp/qr.html?map-qr='+encodeURIComponent(mapsurl);
-        // console.log(encodedurl);
-
-        // // URLをエンコード
-        // const encodedUrl = encodeURIComponent('https://wd-map.hozo.jp/qr.html?map-qr='+mapsurl.replaceAll("[","").replaceAll("]",""));
-        const encodedText = encodeURIComponent('WD巡礼マップ - Wikidataによる巡礼ルート作成');
-        // <!-- X (Twitter) シェアボタン -->
-        // <a href="https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}"
-        //   target="_blank" class="button-X"> X で共有
-        // </a>
-
         let shareButtons = `
           <!-- X (Twitter) シェアボタン -->
-          <a href="https://twitter.com/intent/tweet?url=https://wd-map.hozo.jp/qr.html?maps=${mapsurl}&text=${encodedText}" target="_blank" class="button-X"> X で共有
+          <a href="javascript:void(0);" onclick="generateSNSLink('X')" class="button-X"> X で共有
           </a>
           <!-- Facebook シェアボタン -->
-          <a href="https://www.facebook.com/sharer/sharer.php?u=https://wd-map.hozo.jp/qr.html?maps=${mapsurl}" target="_blank" class="button-FB">Facebook</a>
+          <a href="javascript:void(0);" onclick="generateSNSLink('FB')" class="button-FB">Facebook</a>
 
           <!-- LINE シェアボタン -->
-          <a href="https://social-plugins.line.me/lineit/share?url=https://wd-map.hozo.jp/qr.html?maps=${mapsurl}" target="_blank" class="button-LINE">LINEで共有</a>
+          <a href="javascript:void(0);" onclick="generateSNSLink('LINE')"  target="_blank" class="button-LINE">LINEで共有</a>
 
           <a href="javascript:void(0);" onclick="generateHTMLLink()" class="button-HTML">HTMLリンク</a>`;
 
@@ -517,29 +549,91 @@ async function setMapList(mapsurl) {
     }
 }
 
-function generateHTMLLink() {
-    // 現在のページのURLを取得
-    const currentURL = 'https://wd-map.hozo.jp/qr.html'+ window.location.search;
-
+function generateSNSLink(sns) {
     const checkboxes = document.querySelectorAll('#map-list input[type="checkbox"]:checked');
     if (checkboxes.length < 1) {
         alert(`MAPを 1 つ以上選択してください`);
         return;
     }
 
-    const mapURL = getMAPurl();
+    const mapURL = getMapQrURL();
+    let snsLink;
+
+    if (sns == "X") {
+        const encodedText = encodeURIComponent('WD巡礼マップ - Wikidataによる巡礼ルート作成');
+        snsLink = `https://twitter.com/intent/tweet?url=https://wd-map.hozo.jp/${mapURL}&text=${encodedText}`;        
+    }
+    else if (sns == "FB") {
+        snsLink = `https://www.facebook.com/sharer/sharer.php?u=https://wd-map.hozo.jp/${mapURL}`;    
+    }
+    else if (sns == "LINE") {
+        const encodedText = encodeURIComponent('WD巡礼マップ - Wikidataによる巡礼ルート作成');
+        snsLink = `https://social-plugins.line.me/lineit/share?url=https://wd-map.hozo.jp/${mapURL}`;      
+    }
+
+    console.log(sns + "-LINK:" + snsLink);
+    window.open(snsLink, '_blank');
+
+}
+
+function generateHTMLLink() {
+    const checkboxes = document.querySelectorAll('#map-list input[type="checkbox"]:checked');
+    if (checkboxes.length < 1) {
+        alert(`MAPを 1 つ以上選択してください`);
+        return;
+    }
+
+    const mapQrURL = getMapQrURL();
+    //'https://wd-map.hozo.jp/qr.html'+ window.location.search;
+
+    const MapOpenURL = getMapOpenURL();
 
     let mapName = "";
     for (let i = 0; i < checkboxes.length; i++) {
-        if(i>0){
+        if (i > 0) {
             mapName += " + ";
         }
         mapName += checkboxes[i].getAttribute("name");
     }
 
+    let areaName = getSlectedArea();
+    if (areaName == "日本") {
+        areaName = "";
+    }
+    else {
+        areaName = "[" + areaName + "]";
+    }
+
 
     // HTMLコードを生成
-    const htmlCode = `<b style="font-size: larger;">${mapName}</b> <a href="${currentURL}" target="_blank" class="button-map">MAP設定</a> <a href="${mapURL}" target="_blank"  class="button-map-show">MAP表示</a>`;
+    const htmlCode =
+        `<b style="font-size: larger;">${mapName}</b> ${areaName} 
+<!-- MAP設定画面へのリンク用 -->
+<a href="${mapQrURL}" target="_blank" class="button-map">MAP設定</a>
+<!-- MAP表示（Wikidataのクエリサービス）へのリンク用 -->
+<a href="${MapOpenURL}" target="_blank"  class="button-map-show">MAP表示</a>
+
+<!-- ボタン表示用のCSS -->
+<style>
+.button-map {
+  padding: 1px 3px;
+  background-color: #ff8c00;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.8em;
+  text-align: center;
+}
+.button-map-show {
+  padding: 1px 3px;
+  background-color: #007BFF;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.8em;
+  text-align: center;
+}
+</style>`;
 
     // ポップアップ用のウィンドウを生成
     const popup = window.open("", "popup", "width=600,height=400");
@@ -568,7 +662,7 @@ function generateHTMLLink() {
                     textarea {
                         width: 100%;
                         max-width: 95%;
-                        height: 100px;
+                        height: 200px;
                         margin-bottom: 20px;
                         resize: none;
                     }

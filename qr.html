@@ -71,7 +71,7 @@
         checkAllMpas();
       }
       else if (getUrlParam('maps') != null) {
-        qr.value = 'https://wd-map.hozo.jp/qr.html?map-qr=' + (getUrlParam('maps')); // QRコードの値を更新
+        qr.value = 'https://wd-map.hozo.jp/qr.html?maps=' + (getUrlParam('maps')); // QRコードの値を更新
       }
       else {
         document.getElementById('qrcode').style.display = 'none';
@@ -102,6 +102,7 @@
              document.getElementById('qrOFF').style.display = 'none';
              document.getElementById('qrON').style.display = 'block';">QR非表示</button>
           <button id="qrON" style=" display:none; " onclick="document.getElementById('qrcode').style.display = 'block';
+              qr.value = 'https://wd-map.hozo.jp/' + getMapQrURL() ;
               document.getElementById('qrOFF').style.display = 'block';
               document.getElementById('qrON').style.display = 'none';">QR表示</button>
           &nbsp;&nbsp;
