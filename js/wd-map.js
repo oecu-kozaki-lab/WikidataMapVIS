@@ -42,7 +42,7 @@ function getUrlParam(param) {
 
 function editMAP() {
     // 現在のURLのパラメータを取得
-    const editURL = getMapQrURL().replace('qr.html','index.html');//
+    const editURL = getMapQrURL().replace('qr.html', 'index.html');//
     const params = window.location.search; // "?key=value&key2=value2" のような形式
     // index.html にパラメータを引き継いで遷移
     window.location.href = editURL;//`index.html${params}`;
@@ -483,6 +483,14 @@ function showMapQR() {
     window.open(mapURL, '_blank');
 }
 
+//QRコードの表示を更新する
+function refreshQR() {
+    document.getElementById('qrcode').style.display = 'block';
+    qr.value = 'https://wd-map.hozo.jp/' + getMapQrURL();
+    document.getElementById('qrOFF').style.display = 'block';
+    document.getElementById('qrON').style.display = 'none';
+}
+
 async function setMapList(mapsurl) {
     const maps_area = mapsurl.split("/area/");
 
@@ -538,7 +546,7 @@ async function setMapList(mapsurl) {
           <a href="javascript:void(0);" onclick="generateSNSLink('X')" class="button-X"> X で共有
           </a>
           <!-- Facebook シェアボタン -->
-          <a href="javascript:void(0);" onclick="generateSNSLink('FB')" class="button-FB">Facebook</a>
+          <a href="javascript:void(0);" onclick="generateSNSLink('FB')" class="button-FB">Facebookで共有</a>
 
           <!-- LINE シェアボタン -->
           <a href="javascript:void(0);" onclick="generateSNSLink('LINE')"  target="_blank" class="button-LINE">LINEで共有</a>
@@ -559,16 +567,31 @@ function generateSNSLink(sns) {
     const mapURL = getMapQrURL();
     let snsLink;
 
+    let mapName = "";
+    for (let i = 0; i < checkboxes.length; i++) {
+        if (i > 0) {
+            mapName += " + ";
+        }
+        mapName += checkboxes[i].getAttribute("name");
+    }
+
+    let areaName = getSlectedArea();
+    if (areaName == "日本") {
+        areaName = "";
+    }
+    else {
+        areaName = "[" + areaName + "]";
+    }
+    const encodedText = encodeURIComponent(`WD巡礼マップ - ${mapName} ${areaName}\n`);
+        
     if (sns == "X") {
-        const encodedText = encodeURIComponent('WD巡礼マップ - Wikidataによる巡礼ルート作成');
-        snsLink = `https://twitter.com/intent/tweet?url=https://wd-map.hozo.jp/${mapURL}&text=${encodedText}`;        
+        snsLink = `https://twitter.com/intent/tweet?url=https://wd-map.hozo.jp/${mapURL}&text=${encodedText}`;
     }
     else if (sns == "FB") {
-        snsLink = `https://www.facebook.com/sharer/sharer.php?u=https://wd-map.hozo.jp/${mapURL}`;    
+        snsLink = `https://www.facebook.com/sharer/sharer.php?u=https://wd-map.hozo.jp/${mapURL} ${encodedText}`;
     }
     else if (sns == "LINE") {
-        const encodedText = encodeURIComponent('WD巡礼マップ - Wikidataによる巡礼ルート作成');
-        snsLink = `https://social-plugins.line.me/lineit/share?url=https://wd-map.hozo.jp/${mapURL}`;      
+        snsLink = `https://social-plugins.line.me/lineit/share?url=https://wd-map.hozo.jp/${mapURL} ${encodedText}`;
     }
 
     console.log(sns + "-LINK:" + snsLink);
